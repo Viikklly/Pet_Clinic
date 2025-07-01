@@ -4,7 +4,7 @@ package com.example.petprojectcrud.service.clients;
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
-import com.example.petprojectcrud.repository.clients.OwnerReposotory;
+import com.example.petprojectcrud.repository.clients.OwnerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,17 +19,17 @@ import java.util.Optional;
 @Transactional
 public class OwnerServiceImpl implements OwnerService {
 
-    private final OwnerReposotory ownerReposotory;
+    private final OwnerRepository ownerRepository;
 
 
     @Override
     public List<OwnerDto> getAllOwners() {
-        return ownerReposotory.findAll().stream().map(owner -> owner.toDto()).toList();
+        return ownerRepository.findAll().stream().map(owner -> owner.toDto()).toList();
     }
 
     @Override
     public OwnerDto getOwnerById(Integer id) {
-        Optional<Owner> ownerOptional = ownerReposotory.findById(id);
+        Optional<Owner> ownerOptional = ownerRepository.findById(id);
         if (ownerOptional.isPresent()) {
             return ownerOptional.get().toDto();
         } else {
@@ -42,7 +42,7 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public OwnerDto updateOwner(Integer id, OwnerDto owner) {
         //получили старого owner по id
-        Optional<Owner> ownerOptional = ownerReposotory.findById(id);
+        Optional<Owner> ownerOptional = ownerRepository.findById(id);
 
         if (ownerOptional.isPresent()) {
             Owner oldOwner = ownerOptional.get();
@@ -73,7 +73,7 @@ public class OwnerServiceImpl implements OwnerService {
                 });
             }
 
-            ownerReposotory.save(oldOwner);
+            ownerRepository.save(oldOwner);
 
             return oldOwner.toDto();
 
@@ -91,7 +91,7 @@ public class OwnerServiceImpl implements OwnerService {
         newOwner.setName(owner.getName());
         newOwner.setEmail(owner.getEmail());
         newOwner.setPhone(owner.getPhone());
-        ownerReposotory.save(newOwner);
+        ownerRepository.save(newOwner);
 
         // List питомцев
         List<Pet> petsOwnerList = new ArrayList<Pet>();
@@ -110,7 +110,7 @@ public class OwnerServiceImpl implements OwnerService {
             });
         }
 
-        ownerReposotory.save(newOwner);
+        ownerRepository.save(newOwner);
 
 
         return newOwner.toDto();
@@ -118,7 +118,15 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     public void deleteOwner(Integer id) {
-        ownerReposotory.deleteById(id);
+        ownerRepository.deleteById(id);
+    }
+
+    // получение списка имен Owner по части имени
+    @Override
+    public List<OwnerDto> getOwnerByName(String name) {
+        List<Owner> byNameLikeOwner = ownerRepository.findByNameContainsIgnoreCase(name);
+        List<OwnerDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toDto()).toList();
+        return listNameLikeOwnerDto;
     }
 
 }

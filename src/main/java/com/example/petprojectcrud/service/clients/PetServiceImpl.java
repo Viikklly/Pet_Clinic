@@ -4,7 +4,7 @@ import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
-import com.example.petprojectcrud.repository.clients.OwnerReposotory;
+import com.example.petprojectcrud.repository.clients.OwnerRepository;
 import com.example.petprojectcrud.repository.clients.PetRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class PetServiceImpl implements PetService {
 
     private final PetRepository petRepository;
     private final OwnerService ownerService;
-    private final OwnerReposotory ownerReposotory;
+    private final OwnerRepository ownerRepository;
 
 
     @Override
@@ -65,7 +65,7 @@ public class PetServiceImpl implements PetService {
             // через ownerService ищем нашего owner
             //Получаем Owner  -  ownerReposotory.findById(id);
 
-            Optional<Owner> ownerOptional = ownerReposotory.findById(owner.getId());
+            Optional<Owner> ownerOptional = ownerRepository.findById(owner.getId());
 
             // проверяем не пустой ли owner с таким id
             if (ownerOptional.isPresent()) {
@@ -83,7 +83,7 @@ public class PetServiceImpl implements PetService {
             }
 
             // сохраняем изменения Cascad All сохраняем 1 раз
-            ownerReposotory.save(ownerOptional.get());
+            ownerRepository.save(ownerOptional.get());
         } else {
             throw new EntityNotFoundException("Owner not found");
         }

@@ -10,5 +10,6 @@ public interface OwnerService {
     public OwnerDto updateOwner(Integer id, OwnerDto owner);
     public OwnerDto createOwner(OwnerDto owner);
     public void deleteOwner(Integer id);
+    public List<OwnerDto> getOwnerByName(String name);
 
 }

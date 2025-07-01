@@ -38,4 +38,10 @@ public class OwnerController {
     public void deleteOwner(@PathVariable Integer id) {
         ownerService.deleteOwner(id);
     }
+
+    // получение списка имен по части имени
+    @GetMapping("/ownersByName/")
+    public List<OwnerDto> getOwnersByName(@RequestParam(value = "name") String name) {
+        return ownerService.getOwnerByName(name);
+    }
 }
