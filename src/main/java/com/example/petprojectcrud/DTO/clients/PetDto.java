@@ -1,5 +1,6 @@
 package com.example.petprojectcrud.DTO.clients;
 
+import com.example.petprojectcrud.enums.AnimalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,13 +23,12 @@ public class PetDto {
 
 
 
-    private String animalType;
+    //private String animalType;
+    private AnimalType animalType;
 
 
 
     private String breed;
-
-
 
     private Integer age;
 

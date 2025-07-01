@@ -56,7 +56,6 @@ public class PetController {
     @PutMapping("/{id}")
     public PetDto updatePet(@PathVariable Integer id, @RequestBody PetDto pet) {
         return petService.updatePet(id, pet);
-        //return null;
     }
 
     @DeleteMapping("/{id}")
@@ -69,7 +68,7 @@ public class PetController {
         return petService.getPetsByName(name);
     }
 
-    // найти всех питомцев по всем именам хозяинов
+    // найти всех питомцев по всем именам хозяев
     @GetMapping("/petsByNameOwner/")
     public List<PetDto> getPetsByNameOwner(@RequestParam(value = "name") String name) {
         return petService.getPetsByOwnerName(name);

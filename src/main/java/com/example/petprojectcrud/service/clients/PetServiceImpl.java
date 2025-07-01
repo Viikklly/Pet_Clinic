@@ -2,6 +2,7 @@ package com.example.petprojectcrud.service.clients;
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import com.example.petprojectcrud.enums.AnimalType;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.repository.clients.OwnerRepository;
@@ -53,6 +54,7 @@ public class PetServiceImpl implements PetService {
         OwnerDto owner = pet.getOwner();
 
         petCreate.setName(pet.getName());
+
         petCreate.setAnimalType(pet.getAnimalType());
         petCreate.setBreed(pet.getBreed());
         petCreate.setAge(pet.getAge());
@@ -95,7 +97,7 @@ public class PetServiceImpl implements PetService {
 
     // Обновляем питомца
     @Override
-    public PetDto updatePet(Integer id, PetDto pet) {
+    public PetDto updatePet(Integer id, PetDto petDto) {
 
         // получили petDto по id
         Optional<Pet> petOptionalByID = petRepository.findById(id);
@@ -107,20 +109,20 @@ public class PetServiceImpl implements PetService {
             Pet petById = petOptionalByID.get();
 
             // если имя не null в pet
-            if (pet.getName() != null) {
-                petById.setName(pet.getName());
+            if (petDto.getName() != null) {
+                petById.setName(petDto.getName());
             }
-            if (pet.getAnimalType() != null) {
-                petById.setAnimalType(pet.getAnimalType());
+            if (petDto.getAnimalType() != null) {
+                petById.setAnimalType(petDto.getAnimalType());
             }
-            if (pet.getBreed() != null) {
-                petById.setBreed(pet.getBreed());
+            if (petDto.getBreed() != null) {
+                petById.setBreed(petDto.getBreed());
             }
-            if (pet.getAge() != null) {
-                petById.setAge(pet.getAge());
+            if (petDto.getAge() != null) {
+                petById.setAge(petDto.getAge());
             }
-            if (pet.getVaccinations() != null) {
-                petById.setVaccinations(pet.getVaccinations());
+            if (petDto.getVaccinations() != null) {
+                petById.setVaccinations(petDto.getVaccinations());
             }
             return petRepository.save(petById).toDto();
 
@@ -141,7 +143,7 @@ public class PetServiceImpl implements PetService {
         return listPetDto;
     }
 
-    // найти всех питомцев по всем именам хозяинов
+    // найти всех питомцев по всем именам хозяев
     @Override
     public List<PetDto> getPetsByOwnerName(String ownerName) {
         List<Pet> listPetsByOwnerName = petRepository.findByOwnerNameContainsIgnoreCase(ownerName);

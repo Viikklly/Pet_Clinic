@@ -2,6 +2,7 @@ package com.example.petprojectcrud.model.clients;
 
 
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import com.example.petprojectcrud.enums.AnimalType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,8 +32,11 @@ public class Pet {
     private String name;
 
 
+//    @Column(name = "animal_type")
+//    private String animalType;
     @Column(name = "animal_type")
-    private String animalType;
+    @Enumerated(EnumType.STRING)
+    private AnimalType animalType;
 
 
     @Column(name = "breed")
