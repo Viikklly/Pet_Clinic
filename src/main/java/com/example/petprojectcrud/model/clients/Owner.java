@@ -7,8 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -34,6 +37,16 @@ public class Owner {
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Pet> pets = new ArrayList<>();
+
+    @Column(name = "update_time")
+    @UpdateTimestamp
+    private Date updateTime;
+
+    @Column(name = "create_time")
+    @CreationTimestamp
+    private Date createTime;
+
+
 
     //
     public OwnerDto toDto() {

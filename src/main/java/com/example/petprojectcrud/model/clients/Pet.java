@@ -5,6 +5,10 @@ import com.example.petprojectcrud.DTO.clients.PetDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.util.Date;
 
 
 @Setter
@@ -40,6 +44,14 @@ public class Pet {
 
     @Column(name = "vaccinations")
     private String vaccinations;
+
+    @Column(name = "update_time")
+    @UpdateTimestamp
+    private Date updateTime;
+
+    @Column(name = "create_time")
+    @CreationTimestamp
+    private Date createTime;
 
 
     public PetDto toDto() {
