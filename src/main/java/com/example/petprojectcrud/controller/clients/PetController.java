@@ -64,4 +64,15 @@ public class PetController {
         petService.deletePet(id);
     }
 
+    @GetMapping("/petsByName/")
+    public List<PetDto> getPetsByName(@RequestParam(value = "name") String name) {
+        return petService.getPetsByName(name);
+    }
+
+    // найти всех питомцев по всем именам хозяинов
+    @GetMapping("/petsByNameOwner/")
+    public List<PetDto> getPetsByNameOwner(@RequestParam(value = "name") String name) {
+        return petService.getPetsByOwnerName(name);
+    }
+
 }

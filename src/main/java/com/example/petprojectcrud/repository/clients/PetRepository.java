@@ -1,8 +1,11 @@
 package com.example.petprojectcrud.repository.clients;
 
+import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /*
 *  Здесь при помощи аннотации @Repository мы просим Spring
@@ -14,5 +17,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Integer> {
+
+    List<Pet> findByNameContainsIgnoreCase(String name);
+
+    List<Pet> findByOwnerNameContainsIgnoreCase(String ownerName);
+
+
 
 }

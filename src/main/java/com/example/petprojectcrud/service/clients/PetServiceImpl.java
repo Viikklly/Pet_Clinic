@@ -133,4 +133,21 @@ public class PetServiceImpl implements PetService {
     public void deletePet(Integer id) {
         petRepository.deleteById(id);
     }
+
+    @Override
+    public List<PetDto> getPetsByName(String name) {
+        List<Pet> byNamePets = petRepository.findByNameContainsIgnoreCase(name);
+        List<PetDto> listPetDto = byNamePets.stream().map(pet -> pet.toDto()).toList();
+        return listPetDto;
+    }
+
+    // найти всех питомцев по всем именам хозяинов
+    @Override
+    public List<PetDto> getPetsByOwnerName(String ownerName) {
+        List<Pet> listPetsByOwnerName = petRepository.findByOwnerNameContainsIgnoreCase(ownerName);
+        List<PetDto> listPetsDtoByOwnerName = listPetsByOwnerName.stream().map(pet -> pet.toDto()).toList();
+        return listPetsDtoByOwnerName;
+    }
+
+
 }

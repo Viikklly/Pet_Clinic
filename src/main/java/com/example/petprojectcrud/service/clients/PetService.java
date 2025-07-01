@@ -10,4 +10,6 @@ public interface PetService {
     public PetDto createPet(PetDto pet);
     public PetDto updatePet(Integer id, PetDto pet);
     public void deletePet(Integer id);
+    public List<PetDto> getPetsByName(String name);
+    public List<PetDto> getPetsByOwnerName(String ownerName);
 }
