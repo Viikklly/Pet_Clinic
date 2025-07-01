@@ -12,4 +12,5 @@ public interface OwnerService {
     public void deleteOwner(Integer id);
     public List<OwnerDto> getOwnerByName(String name);
 
+
 }

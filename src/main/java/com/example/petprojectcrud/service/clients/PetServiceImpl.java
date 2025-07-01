@@ -151,5 +151,17 @@ public class PetServiceImpl implements PetService {
         return listPetsDtoByOwnerName;
     }
 
+    //поиск питомца по номеру телефона хозяина, кличке животного и Animaltype
+    @Override
+    public PetDto findFirstByOwner_PhoneAndNameAndAnimalType(String phone, String name, AnimalType animalType) {
+        Optional<Pet> firstByOwnerPhoneAndNameAndAnimalType = petRepository
+                .findFirstByOwner_PhoneAndNameAndAnimalType(phone, name, animalType);
+        if (firstByOwnerPhoneAndNameAndAnimalType.isPresent()) {
+            return firstByOwnerPhoneAndNameAndAnimalType.get().toDto();
+        } else {
+            throw new EntityNotFoundException("Pet not found");
+        }
+    }
+
 
 }

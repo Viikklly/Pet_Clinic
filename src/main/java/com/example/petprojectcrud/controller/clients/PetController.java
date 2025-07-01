@@ -1,6 +1,7 @@
 package com.example.petprojectcrud.controller.clients;
 
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import com.example.petprojectcrud.enums.AnimalType;
 import com.example.petprojectcrud.service.clients.PetService;
 import com.example.petprojectcrud.service.clients.PetServiceImpl;
 import lombok.AllArgsConstructor;
@@ -74,4 +75,12 @@ public class PetController {
         return petService.getPetsByOwnerName(name);
     }
 
+    //поиск питомца по номеру телефона хозяина, кличке животного и Animaltype
+    @GetMapping("/getPetsByNumberOwnerAndNamePetsAndAnimalTypePets/")
+    public PetDto getPetsByNumberOwnerAndNamePetsAndAnimalTypePets(@RequestParam(value = "phone") String phone,
+                                                                         @RequestParam(value = "petsName") String petsName,
+                                                                         @RequestParam(value = "animalType") AnimalType animalType) {
+
+        return petService.findFirstByOwner_PhoneAndNameAndAnimalType(phone, petsName, animalType);
+    }
 }
