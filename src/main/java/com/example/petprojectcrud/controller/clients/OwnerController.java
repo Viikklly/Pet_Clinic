@@ -44,4 +44,20 @@ public class OwnerController {
     public List<OwnerDto> getOwnersByName(@RequestParam(value = "name") String name) {
         return ownerService.getOwnerByName(name);
     }
+
+
+    // получение списка имен Owner по имени питомца
+    @GetMapping("/ownerByPetName/")
+    public List<OwnerDto> getOwnersByPetName(@RequestParam(value = "petName") String petName) {
+        return ownerService.getOwnerByPetName(petName);
+    }
+
+    // получение Owner по email
+    @GetMapping("/ownerByEmail/")
+    public OwnerDto getOwnersByEmail(@RequestParam(value = "email") String email) {
+        return ownerService.getOwnerByEmail(email);
+    }
+
+
+
 }

@@ -2,6 +2,7 @@ package com.example.petprojectcrud.service.clients;
 
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
+import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.repository.clients.OwnerRepository;
@@ -129,6 +130,18 @@ public class OwnerServiceImpl implements OwnerService {
         return listNameLikeOwnerDto;
     }
 
+    // получение списка имен Owner по имени питомца
+    @Override
+    public List<OwnerDto> getOwnerByPetName(String petName) {
+        List<Owner> ownerByPetsName = ownerRepository.findOwnerByPetsName(petName);
+        return ownerByPetsName.stream().map(owner -> owner.toDto()).toList();
+    }
+
+    @Override
+    public OwnerDto getOwnerByEmail(String email) {
+        List<Owner> byEmail = ownerRepository.findByEmail(email);
+        return  byEmail.stream().findFirst().get().toDto();
+    }
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.petprojectcrud.repository.clients;
 
 import com.example.petprojectcrud.model.clients.Owner;
+import com.example.petprojectcrud.model.clients.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,10 @@ public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 
     // находим хозяина по части имени
     List<Owner> findByNameContainsIgnoreCase(String name);
+
+    // находим хозяина по имени питомца
+    List<Owner> findOwnerByPetsName(String petName);
+
+    // находим хозяина по имени EMAIL
+    List<Owner> findByEmail(String email);
 }

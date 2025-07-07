@@ -11,6 +11,7 @@ public interface OwnerService {
     public OwnerDto createOwner(OwnerDto owner);
     public void deleteOwner(Integer id);
     public List<OwnerDto> getOwnerByName(String name);
-
+    public  List<OwnerDto> getOwnerByPetName(String petName);
+    public OwnerDto getOwnerByEmail(String email);
 
 }

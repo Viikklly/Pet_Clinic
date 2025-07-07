@@ -80,7 +80,6 @@ public class PetController {
     public PetDto getPetsByNumberOwnerAndNamePetsAndAnimalTypePets(@RequestParam(value = "phone") String phone,
                                                                          @RequestParam(value = "petsName") String petsName,
                                                                          @RequestParam(value = "animalType") AnimalType animalType) {
-
         return petService.findFirstByOwner_PhoneAndNameAndAnimalType(phone, petsName, animalType);
     }
 }
