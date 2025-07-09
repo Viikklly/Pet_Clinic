@@ -131,6 +131,8 @@ public class PetServiceImpl implements PetService {
         }
     }
 
+
+    //Вместо удаления теперь меняется поле is_active
     @Override
     public void deletePet(Integer id) {
         petRepository.deleteById(id);

@@ -3,10 +3,12 @@ package com.example.petprojectcrud.model.clients;
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -45,6 +47,10 @@ public class Owner {
     @Column(name = "create_time")
     @CreationTimestamp
     private Date createTime;
+
+    @Column(name = "is_active", nullable = false)
+    @ColumnDefault("true")
+    private Boolean isActive;
 
 
 

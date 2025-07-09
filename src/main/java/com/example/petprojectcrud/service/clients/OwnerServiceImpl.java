@@ -117,6 +117,7 @@ public class OwnerServiceImpl implements OwnerService {
         return newOwner.toDto();
     }
 
+    //Вместо удаления теперь меняется поле is_active
     @Override
     public void deleteOwner(Integer id) {
         ownerRepository.deleteById(id);
