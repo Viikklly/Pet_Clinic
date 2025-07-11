@@ -26,7 +26,7 @@ public class Pet {
     @Column(name = "pet_id")
     private Integer id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "owner_id", referencedColumnName = "owner_id")
     private Owner owner;
 
@@ -34,16 +34,12 @@ public class Pet {
     private String name;
 
 
-//    @Column(name = "animal_type")
-//    private String animalType;
     @Column(name = "animal_type")
     @Enumerated(EnumType.STRING)
     private AnimalType animalType;
 
-
     @Column(name = "breed")
     private String breed;
-
 
     @Column(name = "age")
     private Integer age;
@@ -61,6 +57,9 @@ public class Pet {
 
     @Column(name = "is_active", nullable = false)
     @ColumnDefault("true")
+    @org.hibernate.annotations.Generated(
+            org.hibernate.annotations.GenerationTime.INSERT
+    )
     private Boolean isActive;
 
 

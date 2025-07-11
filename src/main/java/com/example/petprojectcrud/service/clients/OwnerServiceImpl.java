@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,10 @@ public class OwnerServiceImpl implements OwnerService {
 
     @Override
     public List<OwnerDto> getAllOwners() {
-        return ownerRepository.findAll().stream().map(owner -> owner.toDto()).toList();
+        return ownerRepository.findAll().stream()
+                .sorted(Comparator.comparing(Owner::getId))
+                .map(owner -> owner.toDto())
+                .toList();
     }
 
     @Override
@@ -74,9 +78,9 @@ public class OwnerServiceImpl implements OwnerService {
                 });
             }
 
-            ownerRepository.save(oldOwner);
+            Owner updatedOwner = ownerRepository.save(oldOwner);
 
-            return oldOwner.toDto();
+            return updatedOwner.toDto();
 
         } else {
             // бросить свое исключение notFound
@@ -92,32 +96,35 @@ public class OwnerServiceImpl implements OwnerService {
         newOwner.setName(owner.getName());
         newOwner.setEmail(owner.getEmail());
         newOwner.setPhone(owner.getPhone());
+        //newOwner.setIsActive(true);
         ownerRepository.save(newOwner);
 
         // List питомцев
         List<Pet> petsOwnerList = new ArrayList<Pet>();
 
         if (!owner.getPets().isEmpty()) {
-            owner.getPets().forEach(pet -> {
+            for (PetDto pet : owner.getPets()) {
                 Pet petNew = new Pet();
                 petNew.setName(pet.getName());
                 petNew.setAnimalType(pet.getAnimalType());
                 petNew.setBreed(pet.getBreed());
                 petNew.setAge(pet.getAge());
                 petNew.setVaccinations(pet.getVaccinations());
+                //petNew.setIsActive(true);
+
                 petNew.setOwner(newOwner);
 
                 newOwner.getPets().add(petNew);
-            });
+            }
         }
 
-        ownerRepository.save(newOwner);
+        Owner save = ownerRepository.save(newOwner);
 
 
-        return newOwner.toDto();
+        return save.toDto();
     }
 
-    //Вместо удаления теперь меняется поле is_active
+    //Вместо удаления теперь меняется поле is_active(сделать)
     @Override
     public void deleteOwner(Integer id) {
         ownerRepository.deleteById(id);

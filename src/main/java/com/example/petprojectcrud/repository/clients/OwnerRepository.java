@@ -18,6 +18,7 @@ import java.util.List;
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Integer> {
 
+
     // находим хозяина по части имени
     List<Owner> findByNameContainsIgnoreCase(String name);
 
