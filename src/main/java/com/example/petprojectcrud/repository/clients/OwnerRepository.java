@@ -1,7 +1,6 @@
 package com.example.petprojectcrud.repository.clients;
 
 import com.example.petprojectcrud.model.clients.Owner;
-import com.example.petprojectcrud.model.clients.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

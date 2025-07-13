@@ -68,6 +68,13 @@ class OwnerServiceImplTest {
     }
 
     @Test
+    void updateOwnerException(){
+        OwnerDto ownerDto = getListOwners().get(0).toDto();
+        Mockito.when(ownerRepository.findById(any())).thenReturn(Optional.empty());
+        Assertions.assertThrows(EntityNotFoundException.class, () -> ownerService.updateOwner(any(), ownerDto));
+    }
+
+    @Test
     void updateOwner() {
         Owner owner1 = getListOwners().get(0);
         Owner owner2 = getListOwners().get(0);
@@ -99,15 +106,8 @@ class OwnerServiceImplTest {
         Assertions.assertEquals(petDto.getId(), ownerUpdatePetDto.getId());
         Assertions.assertEquals(petDto.getName(), ownerUpdatePetDto.getName());
         Assertions.assertEquals(petDto.getAge(), ownerUpdatePetDto.getAge());
-        Assertions.assertEquals(petDto.getOwner(), ownerUpdatePetDto.getOwner());
+        Assertions.assertEquals(petDto.getOwnerId(), ownerUpdatePetDto.getOwnerId());
 
-    }
-
-    @Test
-    void updateOwnerException(){
-        OwnerDto ownerDto = getListOwners().get(0).toDto();
-        Mockito.when(ownerRepository.findById(any())).thenReturn(Optional.empty());
-        Assertions.assertThrows(EntityNotFoundException.class, () -> ownerService.updateOwner(any(), ownerDto));
     }
 
     @Test

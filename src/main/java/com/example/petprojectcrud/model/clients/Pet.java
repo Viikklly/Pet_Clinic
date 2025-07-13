@@ -67,6 +67,7 @@ public class Pet {
         return PetDto.builder()
                 .id(id)
                 .name(name)
+                .ownerId(owner.getId() == null ? null : owner.getId())
                 .animalType(animalType)
                 .breed(breed)
                 .age(age)

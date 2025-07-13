@@ -17,12 +17,12 @@ import java.util.Optional;
 
 
 @AllArgsConstructor
+
 @Service
 @Transactional
 public class PetServiceImpl implements PetService {
 
     private final PetRepository petRepository;
-    private final OwnerService ownerService;
     private final OwnerRepository ownerRepository;
 
 
@@ -51,7 +51,7 @@ public class PetServiceImpl implements PetService {
         //создаем нового Pet
         Pet petCreate = new Pet();
 
-        OwnerDto owner = pet.getOwner();
+        Integer ownerId = pet.getOwnerId();
 
         petCreate.setName(pet.getName());
 
@@ -63,11 +63,11 @@ public class PetServiceImpl implements PetService {
 
         //добавляем связь Pet c Owner
         // если id не 0
-        if (owner.getId() != null) {
+        if (ownerId != null) {
             // через ownerService ищем нашего owner
             //Получаем Owner  -  ownerReposotory.findById(id);
 
-            Optional<Owner> ownerOptional = ownerRepository.findById(owner.getId());
+            Optional<Owner> ownerOptional = ownerRepository.findById(ownerId);
 
             // проверяем не пустой ли owner с таким id
             if (ownerOptional.isPresent()) {
@@ -155,7 +155,7 @@ public class PetServiceImpl implements PetService {
 
     //поиск питомца по номеру телефона хозяина, кличке животного и Animaltype
     @Override
-    public PetDto findFirstByOwner_PhoneAndNameAndAnimalType(String phone, String name, AnimalType animalType) {
+    public PetDto findFirstByOwnerPhoneAndNameAndAnimalType(String phone, String name, AnimalType animalType) {
         Optional<Pet> firstByOwnerPhoneAndNameAndAnimalType = petRepository
                 .findFirstByOwner_PhoneAndNameAndAnimalType(phone, name, animalType);
         if (firstByOwnerPhoneAndNameAndAnimalType.isPresent()) {

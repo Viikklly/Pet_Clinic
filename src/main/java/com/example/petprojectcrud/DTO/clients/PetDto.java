@@ -1,6 +1,7 @@
 package com.example.petprojectcrud.DTO.clients;
 
 import com.example.petprojectcrud.enums.AnimalType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,11 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder // строит без оператора new
+@Schema
 public class PetDto {
 
     private Integer id;
 
-    private OwnerDto owner;
+    private Integer ownerId;
 
     private String name;
 
