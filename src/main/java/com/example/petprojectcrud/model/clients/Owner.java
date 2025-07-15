@@ -3,6 +3,8 @@ package com.example.petprojectcrud.model.clients;
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import com.example.petprojectcrud.model.address.Address;
+import com.example.petprojectcrud.model.address.Street;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -40,6 +42,10 @@ public class Owner {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Pet> pets = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
+
     @Column(name = "update_time")
     @UpdateTimestamp
     private Date updateTime;
@@ -49,11 +55,7 @@ public class Owner {
     private Date createTime;
 
     @Column(name = "is_active", nullable = false)
-    @ColumnDefault("true")
-    @org.hibernate.annotations.Generated(
-            GenerationTime.INSERT
-    )
-    private Boolean isActive;
+    private Boolean isActive = true;
 
 
 
@@ -67,8 +69,8 @@ public class Owner {
                 .name(name)
                 .email(email)
                 .phone(phone)
+                .address(address == null ? null : address.toDto())
                 .pets(petsDto)
                 .build();
     }
-
 }

@@ -3,18 +3,24 @@ package com.example.petprojectcrud.service.clients;
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import com.example.petprojectcrud.model.address.Address;
+import com.example.petprojectcrud.model.address.City;
+import com.example.petprojectcrud.model.address.Country;
+import com.example.petprojectcrud.model.address.Street;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
+import com.example.petprojectcrud.repository.address.AddressRepository;
+import com.example.petprojectcrud.repository.address.CountryRepository;
 import com.example.petprojectcrud.repository.clients.OwnerRepository;
+import com.example.petprojectcrud.repository.clients.PetRepository;
+import com.example.petprojectcrud.service.address.CountryService;
+import com.example.petprojectcrud.service.address.CountryServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @AllArgsConstructor
 @Service
@@ -22,6 +28,8 @@ import java.util.Optional;
 public class OwnerServiceImpl implements OwnerService {
 
     private final OwnerRepository ownerRepository;
+
+
 
 
     @Override
@@ -45,38 +53,18 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public OwnerDto updateOwner(Integer id, OwnerDto owner) {
+    public OwnerDto updateOwner(Integer id, OwnerDto ownerDto) {
         //получили старого owner по id
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
 
         if (ownerOptional.isPresent()) {
+
             Owner oldOwner = ownerOptional.get();
-            // список
-            List<Pet> petsOldOwnerList = oldOwner.getPets();
+            List<Pet> petsListOwnerEntity = oldOwner.getPets();
 
-            if (owner.getName() != null) {
-                oldOwner.setName(owner.getName());
-            }
-            if (owner.getEmail() != null) {
-                oldOwner.setEmail(owner.getEmail());
-            }
-            if (owner.getPhone() != null) {
-                oldOwner.setPhone(owner.getPhone());
-            }
-            if (!owner.getPets().isEmpty()) {
-                owner.getPets().forEach(pet -> {
-                    Pet petNew = new Pet();
-
-                    petNew.setName(pet.getName());
-                    petNew.setAnimalType(pet.getAnimalType());
-                    petNew.setBreed(pet.getBreed());
-                    petNew.setAge(pet.getAge());
-                    petNew.setVaccinations(pet.getVaccinations());
-                    petNew.setOwner(oldOwner);
-
-                    petsOldOwnerList.add(petNew);
-                });
-            }
+            setOwnerNameEmailPhone(ownerDto, oldOwner);
+            petsCreateOrUpdate(ownerDto, oldOwner, petsListOwnerEntity);
+            addressCreateOrUpdate(ownerDto, oldOwner);
 
             Owner updatedOwner = ownerRepository.save(oldOwner);
 
@@ -89,39 +77,35 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public OwnerDto createOwner(OwnerDto owner) {
+    public OwnerDto createOwner(OwnerDto ownerDto) {
         //создаем нового Owner
         Owner newOwner = new Owner();
 
-        newOwner.setName(owner.getName());
-        newOwner.setEmail(owner.getEmail());
-        newOwner.setPhone(owner.getPhone());
-        //newOwner.setIsActive(true);
+        setOwnerNameEmailPhone(ownerDto, newOwner);
+
         ownerRepository.save(newOwner);
 
-        // List питомцев
         List<Pet> petsOwnerList = new ArrayList<Pet>();
 
-        if (!owner.getPets().isEmpty()) {
-            for (PetDto pet : owner.getPets()) {
-                Pet petNew = new Pet();
-                petNew.setName(pet.getName());
-                petNew.setAnimalType(pet.getAnimalType());
-                petNew.setBreed(pet.getBreed());
-                petNew.setAge(pet.getAge());
-                petNew.setVaccinations(pet.getVaccinations());
-                //petNew.setIsActive(true);
 
-                petNew.setOwner(newOwner);
 
-                newOwner.getPets().add(petNew);
+        if (!ownerDto.getPets().isEmpty()) {
+            for (PetDto pet : ownerDto.getPets()) {
+
+                Pet newPet = getNewPet(pet);
+
+                newPet.setOwner(newOwner);
+
+                newOwner.getPets().add(newPet);
             }
         }
 
-        Owner save = ownerRepository.save(newOwner);
+        addressCreateOrUpdate(ownerDto, newOwner);
+
+        /*Owner save = */ownerRepository.save(newOwner);
 
 
-        return save.toDto();
+        return newOwner.toDto();
     }
 
     //Вместо удаления теперь меняется поле is_active(сделать)
@@ -152,4 +136,124 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
 
+
+
+
+    private Pet getNewPet(PetDto petDto) {
+        Pet petNew = new Pet();
+        petNew.setName(petDto.getName());
+        petNew.setAnimalType(petDto.getAnimalType());
+        petNew.setBreed(petDto.getBreed());
+        petNew.setAge(petDto.getAge());
+        petNew.setVaccinations(petDto.getVaccinations());
+
+        return petNew;
+    }
+
+    private Pet getUpdarePetDtoFromPet(Pet pet, PetDto petDto) {
+        pet.setName(petDto.getName());
+        pet.setAnimalType(petDto.getAnimalType());
+        pet.setBreed(petDto.getBreed());
+        pet.setAge(petDto.getAge());
+        pet.setVaccinations(petDto.getVaccinations());
+        return pet;
+    }
+
+    private void setOwnerNameEmailPhone(OwnerDto ownerDto, Owner oldOwner) {
+        if (ownerDto.getName() != null) {
+            oldOwner.setName(ownerDto.getName());
+        }
+        if (ownerDto.getEmail() != null) {
+            oldOwner.setEmail(ownerDto.getEmail());
+        }
+        if (ownerDto.getPhone() != null) {
+            oldOwner.setPhone(ownerDto.getPhone());
+        }
+    }
+
+
+
+    private void petsCreateOrUpdate(OwnerDto ownerDto,
+                                    Owner oldOwner,
+                                    List<Pet> petsListOwnerEntity ) {
+        if (!ownerDto.getPets().isEmpty()) {
+
+            ownerDto.getPets().forEach(petDto -> {
+
+                if (petDto.getId() == null){
+                    Pet newPet = getNewPet(petDto);
+
+                    newPet.setOwner(oldOwner);
+                    oldOwner.getPets().add(newPet);
+                } else {
+                    Integer idPetDto = petDto.getId();
+                    Optional<Pet> optionalPet = petsListOwnerEntity.stream()
+                            .filter(pet -> Objects.equals(pet.getId(), idPetDto))
+                            .findFirst();
+                    //.ifPresent(pet -> getUpdarePetDtoFromPet(pet, petDto));
+                    if (optionalPet.isPresent()) {
+                        getUpdarePetDtoFromPet(optionalPet.get(), petDto);
+                    } else {
+                        throw new EntityNotFoundException("Pets with this Id not found");
+                    }
+                }
+            });
+        }
+
+    }
+
+    private void addressCreateOrUpdate(OwnerDto ownerDto, Owner oldOwner){
+        Address address = null;
+        if (ownerDto.getAddress() != null){
+
+            address = new Address();
+
+            if (ownerDto.getAddress().getCountry() != null) {
+                Country country = new Country(ownerDto.getAddress().getCountry());
+                country.setAddress(address);
+                address.setCountry(country);
+            } else {
+                Country countryNew = new Country();
+                countryNew.setCountryName(ownerDto.getAddress().getCountry());
+                countryNew.setAddress(address);
+                address.setCountry(countryNew);
+            }
+
+            if (ownerDto.getAddress().getCity() != null) {
+                City city = new City(ownerDto.getAddress().getCity());
+                city.setAddress(address);
+                address.setCity(city);
+            } else {
+                City cityNew = new City();
+                cityNew.setCityName(ownerDto.getAddress().getCity());
+                cityNew.setAddress(address);
+                address.setCity(cityNew);
+            }
+
+            if (ownerDto.getAddress().getStreet() != null) {
+                Street street = new Street(ownerDto.getAddress().getStreet());
+                street.setAddress(address);
+                address.setStreet(street);
+            } else {
+                Street streetNew = new Street();
+                streetNew.setStreetName(ownerDto.getAddress().getStreet());
+                streetNew.setAddress(address);
+                address.setStreet(streetNew);
+            }
+
+            if (ownerDto.getAddress().getHouseNumber() != null) {
+                address.setHouseNumber(ownerDto.getAddress().getHouseNumber());
+            } else {
+                address.setHouseNumber(ownerDto.getAddress().getHouseNumber());
+            }
+
+            if (ownerDto.getAddress().getApartmentNumber() != null) {
+                address.setApartmentNumber(ownerDto.getAddress().getApartmentNumber());
+            } else {
+                address.setApartmentNumber(ownerDto.getAddress().getApartmentNumber());
+            }
+
+            oldOwner.setAddress(address);
+        }
+    }
 }

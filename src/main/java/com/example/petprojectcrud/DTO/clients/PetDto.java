@@ -1,6 +1,7 @@
 package com.example.petprojectcrud.DTO.clients;
 
 import com.example.petprojectcrud.enums.AnimalType;
+import com.example.petprojectcrud.model.clients.Pet;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

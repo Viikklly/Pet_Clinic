@@ -5,19 +5,21 @@ import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.enums.AnimalType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Entity
 @Table(name = "pets")
 @Getter
+@Builder
 public class Pet {
 
 
@@ -56,11 +58,7 @@ public class Pet {
     private Date createTime;
 
     @Column(name = "is_active", nullable = false)
-    @ColumnDefault("true")
-    @org.hibernate.annotations.Generated(
-            org.hibernate.annotations.GenerationTime.INSERT
-    )
-    private Boolean isActive;
+    private Boolean isActive = true;
 
 
     public PetDto toDto() {
