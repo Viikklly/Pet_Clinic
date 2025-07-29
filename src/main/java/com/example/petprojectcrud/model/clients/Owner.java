@@ -4,14 +4,11 @@ package com.example.petprojectcrud.model.clients;
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.model.address.Address;
-import com.example.petprojectcrud.model.address.Street;
 import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.ArrayList;

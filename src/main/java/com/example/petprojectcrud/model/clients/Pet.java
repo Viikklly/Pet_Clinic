@@ -4,21 +4,18 @@ package com.example.petprojectcrud.model.clients;
 import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.enums.AnimalType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
 @Entity
 @Table(name = "pets")
 @Getter
+@Setter
 @Builder
 public class Pet {
 

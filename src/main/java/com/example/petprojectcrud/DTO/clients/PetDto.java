@@ -1,12 +1,12 @@
 package com.example.petprojectcrud.DTO.clients;
 
+import com.example.petprojectcrud.DTO.employee.EmployeeDto;
 import com.example.petprojectcrud.enums.AnimalType;
+import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
+import com.example.petprojectcrud.model.employee.Employee;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
