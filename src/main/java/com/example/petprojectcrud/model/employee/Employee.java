@@ -2,7 +2,7 @@ package com.example.petprojectcrud.model.employee;
 
 
 import com.example.petprojectcrud.DTO.employee.EmployeeDto;
-import com.example.petprojectcrud.DTO.employee.ServicesDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServicesDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,7 +35,7 @@ public class Employee {
     @JoinTable(name = "employee_services",
             joinColumns = @JoinColumn(name = "employee_id"),
             inverseJoinColumns = @JoinColumn(name = "service_id"))
-    private Set<Services> services = new HashSet<>();
+    private Set<MedicalServices> services = new HashSet<>();
 
     @Column(name = "update_time")
     @UpdateTimestamp
@@ -68,10 +68,10 @@ public class Employee {
 
          */
 
-        Set<ServicesDto> servicesDtos = services.stream()
-                .map(serv -> ServicesDto.builder()
+        Set<MedicalServicesDto> medicalServicesDtos = services.stream()
+                .map(serv -> MedicalServicesDto.builder()
                         .id(serv.getId())
-                        .serviceType(serv.getServiceType().toDto())
+                        .serviceType(serv.getMedicalServiceType().toDto())
                         .price(serv.getPrice())
                         .description(serv.getDescription())
                         .build())
@@ -81,7 +81,7 @@ public class Employee {
                 .id(id)
                 .name(name)
                 .specialization(specialization)
-                .services(servicesDtos)
+                .services(medicalServicesDtos)
                 .build();
     }
 }

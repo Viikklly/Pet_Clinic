@@ -14,7 +14,7 @@ CREATE TABLE pets_owners_sheme.employee (
 );
 
 -- Создание таблицы услуг
-CREATE TABLE pets_owners_sheme.services (
+CREATE TABLE pets_owners_sheme.medicalServices (
                           id SERIAL PRIMARY KEY,
                           service_type_id INTEGER NOT NULL,
                           price NUMERIC(10, 2),
@@ -28,14 +28,14 @@ CREATE TABLE pets_owners_sheme.employee_services (
                                    service_id INTEGER NOT NULL,
                                    PRIMARY KEY (employee_id, service_id),
                                    FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE,
-                                   FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE
+                                   FOREIGN KEY (service_id) REFERENCES medicalServices(id) ON DELETE CASCADE
 );
 
 -- Создание индексов
 -- idx_service_type_code - ускоряет поиск по коду типа услуги (используется для быстрого доступа)
 CREATE INDEX idx_service_type_code ON pets_owners_sheme.service_types(code);
 -- idx_services_type - оптимизирует соединения по типу услуги
-CREATE INDEX idx_services_type ON pets_owners_sheme.services(service_type_id);
+CREATE INDEX idx_services_type ON pets_owners_sheme.medicalServices(service_type_id);
 -- idx_employee_name - ускоряет поиск сотрудников по имени
 CREATE INDEX idx_employee_name ON pets_owners_sheme.employee(name);
 -- idx_employee_services_emp - оптимизирует запросы вида "какие услуги может оказывать сотрудник X"
@@ -61,7 +61,7 @@ CREATE INDEX idx_employee_services_svc ON pets_owners_sheme.employee_services(se
 --                                                 ('Смирнов Дмитрий Олегович', 'Грумер');
 --
 -- Заполнение таблицы услуг
--- INSERT INTO services (service_type_id, price, description) VALUES
+-- INSERT INTO medicalServices (service_type_id, price, description) VALUES
 --                                                                (1, 1500.00, 'Комплексная ежегодная вакцинация'),
 --                                                                (1, 2000.00, 'Экстренная вакцинация от бешенства'),
 --                                                                (2, 2500.00, 'Чипирование с внесением в международный реестр'),
@@ -92,7 +92,7 @@ CREATE INDEX idx_employee_services_svc ON pets_owners_sheme.employee_services(se
 
 --SELECT setval('service_types_id_seq', (SELECT MAX(id) FROM service_types));
 --SELECT setval('employee_id_seq', (SELECT MAX(id) FROM employee));
---SELECT setval('services_id_seq', (SELECT MAX(id) FROM services));
+--SELECT setval('services_id_seq', (SELECT MAX(id) FROM medicalServices));
 
 
 --Функция setval() явно устанавливает текущее значение последовательности равным максимальному ID в таблице.

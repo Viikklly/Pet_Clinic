@@ -1,16 +1,21 @@
 package com.example.petprojectcrud.model.visit;
 
 
-import com.example.petprojectcrud.DTO.priem.VisitDto;
+import com.example.petprojectcrud.DTO.priem.VisitDtoResponse;
+import com.example.petprojectcrud.DTO.priem.VisitDtoRequest;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.model.employee.Employee;
-import com.example.petprojectcrud.model.employee.Services;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "visit")
@@ -28,38 +33,70 @@ public class Visit {
     @Column(name = "description")
     private String description;
 
-    @JoinColumn(name = "pet_id", referencedColumnName = "pet_id")
-    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pet_id",
+            referencedColumnName = "pet_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Pet pet;
 
 
-    @JoinColumn(name = "owner_id", referencedColumnName = "owner_id")
-    @OneToOne
+    @JoinColumn(name = "owner_id",
+            referencedColumnName = "owner_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Owner owner;
 
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    @OneToOne
+    @JoinColumn(name = "employee_id",
+            referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Employee employee;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private Set<Services> services;
+    @Type(ListArrayType.class)
+    @Column(
+            name = "services[]",
+            columnDefinition = "integer[]"
+    )
+    private List<Integer> idsServices;
 
-    @Column(name = "total_price", precision = 10, scale = 2)
+    @Column(name = "total_price",
+            precision = 10,
+            scale = 2)
     private BigDecimal totalPrice;
 
+    @Column(name = "update_time")
+    @UpdateTimestamp
+    private Date updateTime;
 
-    public VisitDto toDto() {
+    @Column(name = "create_time")
+    @CreationTimestamp
+    private Date createTime;
 
-        return VisitDto
+
+    public VisitDtoResponse toDto() {
+
+        return VisitDtoResponse
                 .builder()
                 .id(id)
                 .description(description)
-                .pet(pet)
-                .owner(owner)
+                .pet(pet.toDto())
+                .owner(owner.toDto())
+                .employee(employee.toDto())
+                //.services(services.stream().map(MedicalServices::toDto).collect(Collectors.toSet()))
                 .totalPrice(totalPrice)
+                .createTime(createTime)
                 .build();
     }
 
+    //Может и не надо
+    public VisitDtoRequest toDtoRequest() {
+
+        return VisitDtoRequest
+                .builder()
+                .id(id)
+                .description(description)
+                .petOwnerName(pet.getName())
+                .ownerName(owner.getName())
+                .ownerPhone(owner.getPhone())
+                .employeeName(employee.getName())
+                .build();
+    }
 }

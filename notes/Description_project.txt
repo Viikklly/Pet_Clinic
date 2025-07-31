@@ -1,0 +1,30 @@
+Ветиринарная клиника
+
+
+address
+client
+employee
+
+
+visit - посещение
+
+    int id; - ID
+
+    String description - описание услуги, которая была оказана
+
+    Pet pet - питомец который был на приеме
+
+    Owner owner - хозяин питомца
+
+    Employee employee - сотрудник который проводил процедуру питомцу
+
+    Set<Services> medicalServices - список услуг, которые были оказаны
+
+    BigDecimal totalPrice - общая цена оказанных услуг
+
+---------
+    public List<VisitDto> getAllVisits()  получает список всех визитов
+
+    VisitDto createVisit(VisitDto visitDtoResponse) - что бы
+    создать Visit метод должен на входе получить список id услуг, которые будут оказаны,
+     и которые, одновременно, оказывает сотрудник, который ведет прием.

@@ -1,6 +1,6 @@
 package com.example.petprojectcrud.model.employee;
 
-import com.example.petprojectcrud.DTO.employee.ServiceTypeDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServiceTypeDto;
 import com.example.petprojectcrud.enums.ServicesTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-public class ServiceType {
+public class MedicalServiceType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -37,8 +37,8 @@ public class ServiceType {
     private Boolean isActive = true;
 
 
-    public ServiceTypeDto toDto() {
-        return ServiceTypeDto.builder()
+    public MedicalServiceTypeDto toDto() {
+        return MedicalServiceTypeDto.builder()
                 .id(this.id)
                 .servicesTypeEnum(this.servicesTypeEnum)
                 .build();

@@ -2,14 +2,14 @@ package com.example.petprojectcrud.service.employee;
 
 
 import com.example.petprojectcrud.DTO.employee.EmployeeDto;
-import com.example.petprojectcrud.DTO.employee.ServiceTypeDto;
-import com.example.petprojectcrud.DTO.employee.ServicesDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServiceTypeDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServicesDto;
 import com.example.petprojectcrud.model.employee.Employee;
-import com.example.petprojectcrud.model.employee.ServiceType;
-import com.example.petprojectcrud.model.employee.Services;
+import com.example.petprojectcrud.model.employee.MedicalServices;
+import com.example.petprojectcrud.model.employee.MedicalServiceType;
 import com.example.petprojectcrud.repository.employee.EmployeeRepository;
-import com.example.petprojectcrud.repository.employee.ServiceTypeRepository;
-import com.example.petprojectcrud.repository.employee.ServicesRepository;
+import com.example.petprojectcrud.repository.employee.MedicalServiceTypeRepository;
+import com.example.petprojectcrud.repository.employee.MedicalServicesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,8 @@ import java.util.Set;
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeRepository employeeRepository;
-    private ServicesRepository servicesRepository;
-    private ServiceTypeRepository serviceTypeRepository;
+    private MedicalServicesRepository medicalServicesRepository;
+    private MedicalServiceTypeRepository medicalServiceTypeRepository;
 
 
     @Override
@@ -53,12 +53,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         // Сохраняем без листа Services
         employeeRepository.save(employee);
 
-        Set<ServicesDto> servicesDtos = employeeDto.getServices();
+        Set<MedicalServicesDto> medicalServicesDtos = employeeDto.getServices();
 
-        Set<Services> servicesDtoFromEmployee = createServicesDtoFromEmployee(servicesDtos, employee);
+        Set<MedicalServices> medicalServicesDtoFromEmployee = createServicesDtoFromEmployee(medicalServicesDtos, employee);
 
         // добавляем Сервисы в Employee
-        employee.setServices(servicesDtoFromEmployee);
+        employee.setServices(medicalServicesDtoFromEmployee);
 
         Employee save = employeeRepository.save(employee);
 
@@ -84,11 +84,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.save(employeeToUpdate);
 
             // проверяем лист сервисов по описанию
-            Set<Services> services = employeeToUpdate.getServices();
+            Set<MedicalServices> services = employeeToUpdate.getServices();
 
-            Set<ServicesDto> servicesWithDto = employeeDto.getServices();
+            Set<MedicalServicesDto> servicesWithDto = employeeDto.getServices();
 
-            Set<ServicesDto> temporaryList = new HashSet<>();
+            Set<MedicalServicesDto> temporaryList = new HashSet<>();
 
             if (services.isEmpty()) {
                 services.stream().forEach(service -> {
@@ -107,10 +107,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
 
             // Формируем Service в Employee
-            Set<Services> servicesDtoFromEmployee = createServicesDtoFromEmployee(temporaryList, employeeToUpdate);
+            Set<MedicalServices> medicalServicesDtoFromEmployee = createServicesDtoFromEmployee(temporaryList, employeeToUpdate);
 
             // Добавляем сервисы из ДТО в список сервисов из Employee
-            services.addAll(servicesDtoFromEmployee);
+            services.addAll(medicalServicesDtoFromEmployee);
 
             // Сохраняем Employee
             employeeRepository.save(employeeToUpdate);
@@ -132,11 +132,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (employee.isPresent()) {
 
-            Set<Services> services = employee.get().getServices();
+            Set<MedicalServices> services = employee.get().getServices();
 
             services.forEach(service -> {
                 service.getEmployees().remove(service);
-                servicesRepository.save(service);
+                medicalServicesRepository.save(service);
             });
         }
         employeeRepository.deleteById(id);
@@ -147,33 +147,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     //Формируем Services из EmployeeDto
-    private Set<Services> createServicesDtoFromEmployee(Set<ServicesDto> servicesDtosSet, Employee employee) {
+    private Set<MedicalServices> createServicesDtoFromEmployee(Set<MedicalServicesDto> medicalServicesDtosSet, Employee employee) {
 
-        Set<Services> servicesSet = new HashSet<>();
+        Set<MedicalServices> medicalServicesSet = new HashSet<>();
 
         // Если список не пустой, надо получить Services по description и добавить к списку Employee
-        if (servicesDtosSet.isEmpty()) {
+        if (medicalServicesDtosSet.isEmpty()) {
 
 
             // достаем description(описание) Сервиса
-            servicesDtosSet.forEach(servicesDto -> {
+            medicalServicesDtosSet.forEach(servicesDto -> {
                 String description = servicesDto.getDescription();
 
                 // Если описание не пустое
                 if (description != null) {
                     // ищем сервис по описанию description
-                    Optional<Services> servicesByDescription = servicesRepository
+                    Optional<MedicalServices> servicesByDescription = medicalServicesRepository
                             .findByDescriptionContainsIgnoreCase(description);
 
                     if (servicesByDescription.isPresent()) {
                         //добавляем в список Сервисов наш сервис
-                        servicesSet.add(servicesByDescription.get());
+                        medicalServicesSet.add(servicesByDescription.get());
 
                         // добавляем в сервис наш Employee
                         servicesByDescription.get().getEmployees().add(employee);
 
                         // Сохраняем обновленный Сервис
-                        servicesRepository.save(servicesByDescription.get());
+                        medicalServicesRepository.save(servicesByDescription.get());
                     } else {
                         throw new EntityNotFoundException("Services not found. Сервиса с таким описанием не существует!");
                     }
@@ -184,18 +184,18 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
         }
-        return servicesSet;
+        return medicalServicesSet;
     }
 
 
-    private ServiceType serviceTypeFromServiceDto(ServiceTypeDto serviceTypeDto) {
-        ServiceType serviceType = ServiceType
+    private MedicalServiceType serviceTypeFromServiceDto(MedicalServiceTypeDto medicalServiceTypeDto) {
+        MedicalServiceType medicalServiceType = MedicalServiceType
                 .builder()
-                .id(serviceTypeDto.getId())
-                .servicesTypeEnum(serviceTypeDto.getServicesTypeEnum())
+                .id(medicalServiceTypeDto.getId())
+                .servicesTypeEnum(medicalServiceTypeDto.getServicesTypeEnum())
                 .build();
 
-        return serviceType;
+        return medicalServiceType;
     }
 
 

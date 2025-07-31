@@ -1,0 +1,22 @@
+
+INSERT INTO pets_owners_sheme.service_types (code, name, description) VALUES
+                                                        ('VACCINATION', 'Вакцинация', 'Плановые и экстренные прививки'),
+                                                        ('CHIPPING', 'Чипирование', 'Имплантация микрочипов для идентификации');
+
+
+INSERT INTO pets_owners_sheme.employee (name, specialization) VALUES
+                                                 ('Иванов Иван Иванович', 'Ветеринар-терапевт'),
+                                                 ('Петрова Полина Петровна', 'Ветеринар-хирург');
+
+
+INSERT INTO pets_owners_sheme.medicalServices (service_type_id, price, description) VALUES
+                                                                (1, 1500.00, 'Комплексная ежегодная вакцинация'),
+                                                               (1, 2000.00, 'Экстренная вакцинация от бешенства'),
+                                                               (2, 2500.00, 'Чипирование с внесением в международный реестр'),
+                                                                (2, 1800.00, 'Чипирование без регистрации');
+
+
+INSERT INTO pets_owners_sheme.employee_services (employee_id, service_id) VALUES
+ (1, 1), (1, 2), (1, 11),
+
+ (2, 3), (2, 4), (2, 7), (2, 8), (2, 5), (2, 6);

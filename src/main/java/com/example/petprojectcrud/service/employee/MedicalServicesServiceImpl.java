@@ -2,15 +2,15 @@ package com.example.petprojectcrud.service.employee;
 
 
 import com.example.petprojectcrud.DTO.employee.EmployeeDto;
-import com.example.petprojectcrud.DTO.employee.ServiceTypeDto;
-import com.example.petprojectcrud.DTO.employee.ServicesDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServiceTypeDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServicesDto;
 import com.example.petprojectcrud.enums.ServicesTypeEnum;
 import com.example.petprojectcrud.model.employee.Employee;
-import com.example.petprojectcrud.model.employee.ServiceType;
-import com.example.petprojectcrud.model.employee.Services;
+import com.example.petprojectcrud.model.employee.MedicalServices;
+import com.example.petprojectcrud.model.employee.MedicalServiceType;
 import com.example.petprojectcrud.repository.employee.EmployeeRepository;
-import com.example.petprojectcrud.repository.employee.ServiceTypeRepository;
-import com.example.petprojectcrud.repository.employee.ServicesRepository;
+import com.example.petprojectcrud.repository.employee.MedicalServiceTypeRepository;
+import com.example.petprojectcrud.repository.employee.MedicalServicesRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,68 +21,68 @@ import java.util.*;
 @AllArgsConstructor
 @Service
 @Transactional
-public class ServicesServiceImpl implements ServicesService {
-    private ServicesRepository servicesRepository;
+public class MedicalServicesServiceImpl implements MedicalServicesService {
+    private MedicalServicesRepository medicalServicesRepository;
     private EmployeeRepository employeeRepository;
-    private ServiceTypeRepository serviceTypeRepository;
+    private MedicalServiceTypeRepository medicalServiceTypeRepository;
 
 
     @Override
-    public List<ServicesDto> getAllServices() {
-        List<ServicesDto> servicesDtoList = servicesRepository.findAll().stream().map(services -> services.toDto()).toList();
-        return servicesDtoList;
+    public List<MedicalServicesDto> getAllServices() {
+        List<MedicalServicesDto> medicalServicesDtoList = medicalServicesRepository.findAll().stream().map(services -> services.toDto()).toList();
+        return medicalServicesDtoList;
     }
 
 
     @Override
-    public ServicesDto createService(ServicesDto servicesDto) {
+    public MedicalServicesDto createService(MedicalServicesDto medicalServicesDto) {
         // Создаем Service
-        Services services = Services
+        MedicalServices medicalServices = MedicalServices
                 .builder()
-                .serviceType(getServiceTypeWithEmployeeDto(servicesDto.getServiceType()))
-                .price(servicesDto.getPrice())
-                .description(servicesDto.getDescription())
+                .medicalServiceType(getServiceTypeWithEmployeeDto(medicalServicesDto.getServiceType()))
+                .price(medicalServicesDto.getPrice())
+                .description(medicalServicesDto.getDescription())
                 .isActive(true)
                 .build();
         // Сохраняем Service без Set <Employee> что бы получить id Services
-        servicesRepository.save(services);
+        medicalServicesRepository.save(medicalServices);
 
         // получаем Set<EmployeeDto>
-        Set<Employee> employeeSet = getEmployeeList(servicesDto, services);
+        Set<Employee> employeeSet = getEmployeeList(medicalServicesDto, medicalServices);
 
         // Добавляем employeeList в Services
-        services.setEmployees(employeeSet);
+        medicalServices.setEmployees(employeeSet);
 
-        return services.toDto();
+        return medicalServices.toDto();
     }
 
 
     @Override
-    public ServicesDto updateService(Integer id, ServicesDto servicesDto) {
+    public MedicalServicesDto updateService(Integer id, MedicalServicesDto medicalServicesDto) {
 
         //Получить Service по id
-        Optional<Services> servicesRepositoryById = servicesRepository.findById(id);
+        Optional<MedicalServices> servicesRepositoryById = medicalServicesRepository.findById(id);
 
         // Если такой Service есть
         if (servicesRepositoryById.isPresent()) {
-            Services service = servicesRepositoryById.get();
+            MedicalServices service = servicesRepositoryById.get();
 
-            if (servicesDto.getServiceType() != null) {
+            if (medicalServicesDto.getServiceType() != null) {
                 // используем метод получения ServiceTypeWithEmployeeDto
-                service.setServiceType(getServiceTypeWithEmployeeDto(servicesDto.getServiceType()));
+                service.setMedicalServiceType(getServiceTypeWithEmployeeDto(medicalServicesDto.getServiceType()));
             }
-            if (servicesDto.getPrice() != null) {
-                service.setPrice(servicesDto.getPrice());
+            if (medicalServicesDto.getPrice() != null) {
+                service.setPrice(medicalServicesDto.getPrice());
             }
-            if (servicesDto.getDescription() != null) {
-                service.setDescription(servicesDto.getDescription());
+            if (medicalServicesDto.getDescription() != null) {
+                service.setDescription(medicalServicesDto.getDescription());
             }
 
             // Лист Employee из сущности
             Set<Employee> employeesList = servicesRepositoryById.get().getEmployees();
 
             // лист Employee из ДТО
-            Set<EmployeeDto> servicesDtoEmployeesList = servicesDto.getEmployees();
+            Set<EmployeeDto> servicesDtoEmployeesList = medicalServicesDto.getEmployees();
 
             // Временный лист
             Set<Employee> temporaryList = new HashSet<>();
@@ -112,7 +112,7 @@ public class ServicesServiceImpl implements ServicesService {
             });
 
             employeesList.addAll(temporaryList);
-            servicesRepository.save(service);
+            medicalServicesRepository.save(service);
 
             return service.toDto();
         } else {
@@ -127,25 +127,25 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     @Transactional
     public void deleteService(Integer id) {
-        Services services = servicesRepository.findById(id)
+        MedicalServices medicalServices = medicalServicesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Service not found"));
 
 
         // удаляем связи
-        for (Employee employee : new HashSet<>(services.getEmployees())){
-            employee.getServices().remove(services);
+        for (Employee employee : new HashSet<>(medicalServices.getEmployees())){
+            employee.getServices().remove(medicalServices);
             employeeRepository.save(employee);
         }
 
-        servicesRepository.deleteById(id);
+        medicalServicesRepository.deleteById(id);
     }
 
 
     // Получаем ServiceType
-    public ServiceType getServiceTypeWithEmployeeDto(ServiceTypeDto serviceTypeDto) {
-        ServicesTypeEnum servicesTypeEnum = serviceTypeDto.getServicesTypeEnum();
+    public MedicalServiceType getServiceTypeWithEmployeeDto(MedicalServiceTypeDto medicalServiceTypeDto) {
+        ServicesTypeEnum servicesTypeEnum = medicalServiceTypeDto.getServicesTypeEnum();
 
-        Optional<ServiceType> byServicesTypeEnum = serviceTypeRepository.findByServicesTypeEnum(servicesTypeEnum);
+        Optional<MedicalServiceType> byServicesTypeEnum = medicalServiceTypeRepository.findByServicesTypeEnum(servicesTypeEnum);
 
 
         if (byServicesTypeEnum.isPresent()) {
@@ -156,10 +156,10 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
     // Получаем Set Employee
-    public Set<Employee> getEmployeeList(ServicesDto servicesDto, Services services) {
+    public Set<Employee> getEmployeeList(MedicalServicesDto medicalServicesDto, MedicalServices medicalServices) {
 
         // Получаем Set Employees из serviceDto
-        Set<EmployeeDto> employeeDtoList = servicesDto.getEmployees();
+        Set<EmployeeDto> employeeDtoList = medicalServicesDto.getEmployees();
 
         Set<Employee> employeesListFromDto = new HashSet<>();
 
@@ -175,7 +175,7 @@ public class ServicesServiceImpl implements ServicesService {
                 employeeByName.ifPresentOrElse(
                         employee -> {
                     // добавляем Service в Employee
-                    employee.getServices().add(services);
+                    employee.getServices().add(medicalServices);
 
                     // Пополняем Set состоящий из Employee
                     employeesListFromDto.add(employee);

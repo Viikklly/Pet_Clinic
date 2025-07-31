@@ -2,7 +2,7 @@ package com.example.petprojectcrud.model.employee;
 
 
 import com.example.petprojectcrud.DTO.employee.EmployeeDto;
-import com.example.petprojectcrud.DTO.employee.ServicesDto;
+import com.example.petprojectcrud.DTO.employee.MedicalServicesDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,10 +16,10 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Setter
 @Entity
-@Table(name = "services")
+@Table(name = "medical_services")
 @Getter
 @Builder
-public class Services {
+public class MedicalServices {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Services {
 
     @ManyToOne
     @JoinColumn(name = "service_type_id", nullable = false)
-    private ServiceType serviceType;
+    private MedicalServiceType medicalServiceType;
 
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
@@ -52,7 +52,7 @@ public class Services {
 
 
 
-    public ServicesDto toDto(/*Services services*/) {
+    public MedicalServicesDto toDto(/*Services services*/) {
         /*
         // Подумать
         if (services == null) {
@@ -79,10 +79,10 @@ public class Services {
                 .collect(Collectors.toSet());
 
 
-        return ServicesDto
+        return MedicalServicesDto
                 .builder()
                 .id(id)
-                .serviceType(serviceType.toDto())
+                .serviceType(medicalServiceType.toDto())
                 .price(price)
                 .description(description)
                 .employees(employeeDtoList)
