@@ -1,7 +1,8 @@
 package com.example.petprojectcrud.controller.visit;
 
-import com.example.petprojectcrud.DTO.priem.VisitDtoResponse;
-import com.example.petprojectcrud.DTO.priem.VisitDtoRequest;
+import com.example.petprojectcrud.DTO.visit.VisitDto;
+import com.example.petprojectcrud.DTO.visit.VisitDtoResponse;
+import com.example.petprojectcrud.DTO.visit.VisitDtoRequest;
 import com.example.petprojectcrud.service.visit.VisitService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +18,19 @@ public class VisitController {
 
 
     @GetMapping
-    public List<VisitDtoResponse> getAllVisits() {
+    public List<VisitDto> getAllVisits() {
         return visitService.getAllVisits();
     }
 
+
     @PostMapping
-    public VisitDtoResponse createVisit(@RequestBody VisitDtoRequest visitDtoRequest) {
+    public VisitDto createVisit(@RequestBody VisitDtoRequest visitDtoRequest) {
         return visitService.createVisit(visitDtoRequest);
+    }
+
+    @GetMapping("/{id}")
+    public VisitDto getVisitById(@PathVariable int id) {
+        return visitService.getVisitById(id);
     }
 
 }

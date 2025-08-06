@@ -1,8 +1,9 @@
 package com.example.petprojectcrud.service.visit;
 
 
-import com.example.petprojectcrud.DTO.priem.VisitDtoResponse;
-import com.example.petprojectcrud.DTO.priem.VisitDtoRequest;
+import com.example.petprojectcrud.DTO.visit.VisitDto;
+import com.example.petprojectcrud.DTO.visit.VisitDtoRequest;
+import com.example.petprojectcrud.apiClients.BankClient;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.model.employee.Employee;
@@ -31,44 +32,65 @@ public class VisitServiceImpl implements VisitService {
     private PetRepository petRepository;
     private OwnerRepository ownerRepository;
     private EmployeeRepository employeeRepository;
+    private BankClient bankClient;
 
 
+    public List<VisitDto> getAllVisits(){
 
-    public List<VisitDtoResponse> getAllVisits(){
+        // String myBank = bankClient.getMyBank();
+        List<Visit> visitsList = visitRepository.findAll();
+        List<VisitDto> visitDtoResponse = new ArrayList<>();
 
-        List<Visit> visitDto = visitRepository.findAll();
-        List<VisitDtoResponse> visitDtoResponse = new ArrayList<>();
-
-        visitDto.stream().forEach(visit -> {
+        visitsList.stream().forEach(visit -> {
 
             List<Integer> idsServices = visit.getIdsServices();
 
             Set<MedicalServices> allByIdIn = medicalServicesRepository.findAllByIdIn(idsServices);
 
-            VisitDtoResponse dtoResponse = VisitDtoResponse
+            // Формируем Map<String, BigDecimal> servicesAndPrices;
+            Map<String, BigDecimal> servicesAndPrices = new HashMap<>();
+            allByIdIn.stream().forEach(medicalService -> {
+                String name = medicalService.getDescription();
+                BigDecimal price = medicalService.getPrice();
+                servicesAndPrices.put(name, price);
+            });
+
+
+
+            VisitDto visitDto = VisitDto
                     .builder()
                     .id(visit.getId())
                     .description(visit.getDescription())
-                    .pet(visit.getPet().toDto())
-                    .owner(visit.getOwner().toDto())
-                    .employee(visit.getEmployee().toDto())
-                    .services(allByIdIn.stream().map(medicalServices -> medicalServices.toDto()).collect(Collectors.toSet()))
+                    .ownerName(visit.getOwner().getName())
+                    .petName(visit.getPet().getName())
+                    .employeeName(visit.getEmployee().getName())
+                    .servicesAndPrices(servicesAndPrices)
                     .totalPrice(visit.getTotalPrice())
                     .createTime(visit.getCreateTime())
                     .build();
 
-            visitDtoResponse.add(dtoResponse);
+            visitDtoResponse.add(visitDto);
         });
-
 
         return visitDtoResponse;
     }
 
-
-    //создать Visit метод должен на входе получить список id услуг, которые будут оказаны
-    //и, одновременно, оказывает сотрудник, ведущий прием.
     @Override
-    public VisitDtoResponse createVisit(VisitDtoRequest visitDtoRequest) {
+    public VisitDto getVisitById(int id) {
+        Optional<Visit> byId = visitRepository.findById(id);
+
+        Visit visit = null;
+        if (byId.isPresent()) {
+            visit = byId.get();
+        } else {
+            throw new EntityNotFoundException("Visit with id " + id + " not found");
+        }
+        return visit.toVisitDto();
+    }
+
+
+    @Override
+    public VisitDto createVisit(VisitDtoRequest visitDtoRequest) {
         Visit newVisit = new Visit();
 
 
@@ -99,6 +121,15 @@ public class VisitServiceImpl implements VisitService {
         // Получаем список цен за оказанные услуги
         List<BigDecimal> servicePricesSet = getServicePrices(medicalServicesFromEmployee);
 
+
+        // Формируем Map<String, BigDecimal> servicesAndPrices;
+        Map<String, BigDecimal> servicesAndPrices = new HashMap<>();
+        medicalServicesFromEmployee.stream().forEach(medicalService -> {
+            String name = medicalService.getMedicalServiceType().getServicesTypeEnum().getName();
+            BigDecimal price = medicalService.getPrice();
+            servicesAndPrices.put(name, price);
+        });
+
         //Общая цена за услуги, c проверкой на null
         BigDecimal totalPrice = servicePricesSet.stream()
                 .filter(Objects::nonNull)
@@ -115,12 +146,11 @@ public class VisitServiceImpl implements VisitService {
 
         visitRepository.save(newVisit);
 
-        return newVisit.toDto();
+        VisitDto visitDto = newVisit.toVisitDto();
+        visitDto.setServicesAndPrices(servicesAndPrices);
+
+        return visitDto;
     }
-
-
-
-
 
 
 

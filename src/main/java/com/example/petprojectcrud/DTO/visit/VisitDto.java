@@ -1,5 +1,4 @@
-package com.example.petprojectcrud.DTO.priem;
-
+package com.example.petprojectcrud.DTO.visit;
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
@@ -13,33 +12,31 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 @Schema
-public class VisitDtoResponse {
-
+public class VisitDto {
     private int id;
 
     private String description;
 
-    private PetDto pet;
+    private String petName;
 
-    private OwnerDto owner;
+    private String ownerName;
 
-    private EmployeeDto employee;
+    private String employeeName;
 
-    private Set<MedicalServicesDto> services;
-
-    //private Set<BigDecimal> servicePrices;
+    private Map<String, BigDecimal> servicesAndPrices;
 
     private BigDecimal totalPrice;
 
     private Date createTime;
-
-
-
 }

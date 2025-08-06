@@ -6,9 +6,11 @@ import com.example.petprojectcrud.service.clients.PetService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @AllArgsConstructor
 @SpringBootApplication
+@EnableFeignClients
 /*
 * Она сообщает Spring, что это главный класс приложения,
 * и Spring автоматически сканирует компоненты и настраивает

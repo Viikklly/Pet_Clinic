@@ -1,4 +1,4 @@
-package com.example.petprojectcrud.DTO.priem;
+package com.example.petprojectcrud.DTO.visit;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @NoArgsConstructor
@@ -32,5 +33,5 @@ public class VisitDtoRequest {
 
     //private Set<BigDecimal> servicePrices;
 
-    //private BigDecimal totalPrice;
+    private BigDecimal totalPrice;
 }

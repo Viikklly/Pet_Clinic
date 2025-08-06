@@ -1,8 +1,9 @@
 package com.example.petprojectcrud.model.visit;
 
 
-import com.example.petprojectcrud.DTO.priem.VisitDtoResponse;
-import com.example.petprojectcrud.DTO.priem.VisitDtoRequest;
+import com.example.petprojectcrud.DTO.visit.VisitDto;
+import com.example.petprojectcrud.DTO.visit.VisitDtoResponse;
+import com.example.petprojectcrud.DTO.visit.VisitDtoRequest;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.model.employee.Employee;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Entity
@@ -97,6 +99,23 @@ public class Visit {
                 .ownerName(owner.getName())
                 .ownerPhone(owner.getPhone())
                 .employeeName(employee.getName())
+                .totalPrice(totalPrice)
+                .build();
+    }
+
+
+    // Необходимо сформировать и засетить Map<String, BigDecimal> servicesAndPrices;
+    public VisitDto toVisitDto() {
+
+        return VisitDto
+                .builder()
+                .id(id)
+                .description(description)
+                .ownerName(owner.getName())
+                .petName(pet.getName())
+                .employeeName(employee.getName())
+                .totalPrice(totalPrice)
+                .createTime(createTime)
                 .build();
     }
 }
