@@ -156,6 +156,15 @@ public class VisitServiceImpl implements VisitService {
 
 
 
+    private void payAndFinishVisit(Integer visitId) {
+
+    }
+
+
+
+
+
+
     private Owner findOwnerFromVisitDtoReceived(String ownerName, String ownerPhone) {
         // Проверка на null для обоих параметров
         if (ownerName == null && ownerPhone == null) {

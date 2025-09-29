@@ -1,22 +1,23 @@
 package com.example.petprojectcrud.DTO.clients;
 
 import com.example.petprojectcrud.DTO.address.AddressDto;
+import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
-@Builder // строит без оператора new
 @Schema
+@SuperBuilder
 public class OwnerDto {
 
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -27,5 +28,4 @@ public class OwnerDto {
     private AddressDto address;
 
     List<PetDto> pets;
-
 }

@@ -1,9 +1,13 @@
 package com.example.petprojectcrud.model.clients;
 
 
+import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsFactoryDto;
+import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsResponseDto;
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
+import com.example.petprojectcrud.DTO.clients.OwnerResponseDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.model.address.Address;
+import com.example.petprojectcrud.model.billingDetails.BillingDetails;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,9 +15,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Setter
@@ -36,12 +39,24 @@ public class Owner {
     @Column(name = "phone")
     private String phone;
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "owner",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     List<Pet> pets = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
+
+
+    @OneToMany(mappedBy = "owner",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private Set<BillingDetails> billingDetails = new HashSet<>();
 
     @Column(name = "update_time")
     @UpdateTimestamp
@@ -62,12 +77,34 @@ public class Owner {
         petsDto = pets.stream().map(Pet::toDto).toList();
 
         return OwnerDto.builder()
-                .id(id)
+                .id(Long.valueOf(id))  // ПОСМОТРЕТЬ ПОЧЕМУ ЛОНГ
                 .name(name)
                 .email(email)
                 .phone(phone)
                 .address(address == null ? null : address.toDto())
                 .pets(petsDto)
+                .build();
+    }
+
+
+    public OwnerResponseDto toResponceDto() {
+        List<PetDto> petsDto = new ArrayList<>();
+        petsDto = pets.stream().map(pet -> pet.toDto()).toList();
+
+        List<BillingDetailsResponseDto> billingDetailsDto = new ArrayList<>();
+        billingDetailsDto = billingDetails.stream().map(billingDetails1 -> new BillingDetailsFactoryDto()
+                .createBillingDetailsDto(billingDetails1))
+                .toList();
+
+
+        return OwnerResponseDto.builder()
+                .id(Long.valueOf(id))
+                .name(name)
+                .email(email)
+                .phone(phone)
+                .address(address == null ? null : address.toDto())
+                .pets(petsDto)
+                .billingDetails(billingDetailsDto)
                 .build();
     }
 }

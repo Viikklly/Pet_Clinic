@@ -1,74 +1,81 @@
 package com.example.petprojectcrud.service.clients;
 
-
+import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsCreateDto;
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
+import com.example.petprojectcrud.DTO.clients.OwnerRequestDto;
+import com.example.petprojectcrud.DTO.clients.OwnerResponseDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
+import com.example.petprojectcrud.enums.BillingType;
 import com.example.petprojectcrud.model.address.Address;
 import com.example.petprojectcrud.model.address.City;
 import com.example.petprojectcrud.model.address.Country;
 import com.example.petprojectcrud.model.address.Street;
+import com.example.petprojectcrud.model.billingDetails.BankAccount;
+import com.example.petprojectcrud.model.billingDetails.BillingDetails;
+import com.example.petprojectcrud.model.billingDetails.CreditCard;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
-import com.example.petprojectcrud.repository.address.AddressRepository;
-import com.example.petprojectcrud.repository.address.CountryRepository;
 import com.example.petprojectcrud.repository.clients.OwnerRepository;
-import com.example.petprojectcrud.repository.clients.PetRepository;
-import com.example.petprojectcrud.service.address.CountryService;
-import com.example.petprojectcrud.service.address.CountryServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+
 @AllArgsConstructor
 @Service
 @Transactional
-public class OwnerServiceImpl implements OwnerService {
+public class OwnerServiceImpl implements OwnerService{
 
     private final OwnerRepository ownerRepository;
 
-
-
-
+    /// +BD
     @Override
-    public List<OwnerDto> getAllOwners() {
+    public List<OwnerResponseDto> getAllOwners() {
         return ownerRepository.findAll().stream()
                 .sorted(Comparator.comparing(Owner::getId))
-                .map(owner -> owner.toDto())
+                .map(owner -> owner.toResponceDto())
                 .toList();
     }
 
+    /// +BD
     @Override
-    public OwnerDto getOwnerById(Integer id) {
+    public OwnerResponseDto getOwnerById(Integer id) {
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
         if (ownerOptional.isPresent()) {
-            return ownerOptional.get().toDto();
+            return ownerOptional.get().toResponceDto();
         } else {
-            // // бросить свое исключение notFound
+            // бросить свое исключение notFound
             // сейчас возвращается пустой объект
-            return OwnerDto.builder().build();
+            return OwnerResponseDto.builder().build();
         }
     }
 
+    /// +BD
     @Override
-    public OwnerDto updateOwner(Integer id, OwnerDto ownerDto) {
+    public OwnerResponseDto updateOwner(Integer id, OwnerRequestDto ownerDto) {
         //получили старого owner по id
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
 
         if (ownerOptional.isPresent()) {
 
             Owner oldOwner = ownerOptional.get();
+
             List<Pet> petsListOwnerEntity = oldOwner.getPets();
+            Set<BillingDetails> oldOwnerBillingDetails = oldOwner.getBillingDetails();
 
             setOwnerNameEmailPhone(ownerDto, oldOwner);
-            petsCreateOrUpdate(ownerDto, oldOwner, petsListOwnerEntity);
+            petsCreateOrUpdate(ownerDto, oldOwner);
             addressCreateOrUpdate(ownerDto, oldOwner);
+
+            billingDetailsCreateOrUpdate(ownerDto, oldOwner);
 
             Owner updatedOwner = ownerRepository.save(oldOwner);
 
-            return updatedOwner.toDto();
+            return updatedOwner.toResponceDto();
 
         } else {
             // бросить свое исключение notFound
@@ -76,12 +83,13 @@ public class OwnerServiceImpl implements OwnerService {
         }
     }
 
+    /// +BD
     @Override
-    public OwnerDto createOwner(OwnerDto ownerDto) {
+    public OwnerResponseDto createOwner(OwnerRequestDto ownerRequestDto) {
         //создаем нового Owner
         Owner newOwner = new Owner();
 
-        setOwnerNameEmailPhone(ownerDto, newOwner);
+        setOwnerNameEmailPhone(ownerRequestDto, newOwner);
 
         ownerRepository.save(newOwner);
 
@@ -89,8 +97,8 @@ public class OwnerServiceImpl implements OwnerService {
 
 
 
-        if (!ownerDto.getPets().isEmpty()) {
-            for (PetDto pet : ownerDto.getPets()) {
+        if (!ownerRequestDto.getPets().isEmpty()) {
+            for (PetDto pet : ownerRequestDto.getPets()) {
 
                 Pet newPet = getNewPet(pet);
 
@@ -100,41 +108,62 @@ public class OwnerServiceImpl implements OwnerService {
             }
         }
 
-        addressCreateOrUpdate(ownerDto, newOwner);
+
+        if (!ownerRequestDto.getBillingDetails().isEmpty()) {
+
+            List<BillingDetailsCreateDto> billingDetails = ownerRequestDto.getBillingDetails();
+            for (BillingDetailsCreateDto billingDetail : billingDetails) {
+
+                BillingDetails billingDetailsEntity = createBillingDetailsForOwner(billingDetail);
+
+                billingDetailsEntity.setOwner(newOwner);
+
+                newOwner.getBillingDetails().add(billingDetailsEntity);
+            }
+        }
+
+
+        addressCreateOrUpdate(ownerRequestDto, newOwner);
 
         /*Owner save = */ownerRepository.save(newOwner);
 
 
-        return newOwner.toDto();
+        return newOwner.toResponceDto();
     }
 
-    //Вместо удаления теперь меняется поле is_active(сделать)
     @Override
     public void deleteOwner(Integer id) {
         ownerRepository.deleteById(id);
     }
 
-    // получение списка имен Owner по части имени
+
+    /// +BD
     @Override
-    public List<OwnerDto> getOwnerByName(String name) {
+    public List<OwnerResponseDto> getOwnerByName(String name) {
         List<Owner> byNameLikeOwner = ownerRepository.findByNameContainsIgnoreCase(name);
-        List<OwnerDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toDto()).toList();
+        //List<OwnerDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toDto()).toList();
+        List<OwnerResponseDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toResponceDto()).toList();
         return listNameLikeOwnerDto;
     }
 
-    // получение списка имен Owner по имени питомца
+    // +BD
     @Override
-    public List<OwnerDto> getOwnerByPetName(String petName) {
+    public List<OwnerResponseDto> getOwnerByPetName(String petName) {
         List<Owner> ownerByPetsName = ownerRepository.findOwnerByPetsName(petName);
-        return ownerByPetsName.stream().map(owner -> owner.toDto()).toList();
+        return ownerByPetsName.stream().map(owner -> owner.toResponceDto()).toList();
     }
 
     @Override
-    public OwnerDto getOwnerByEmail(String email) {
+    public OwnerResponseDto getOwnerByEmail(String email) {
         List<Owner> byEmail = ownerRepository.findByEmail(email);
-        return  byEmail.stream().findFirst().get().toDto();
+        Optional<Owner> optionalOwner = byEmail.stream().findFirst();
+        if (optionalOwner.isPresent()) {
+            return optionalOwner.get().toResponceDto();
+        } else {
+            // Подумать что тут выдавать, если по эмайл не найден
+            throw new EntityNotFoundException("Owner not found");
+        }
     }
-
 
 
 
@@ -150,7 +179,8 @@ public class OwnerServiceImpl implements OwnerService {
         return petNew;
     }
 
-    private Pet getUpdarePetDtoFromPet(Pet pet, PetDto petDto) {
+
+    private Pet getUpdatePetDtoFromPet(Pet pet, PetDto petDto) {
         pet.setName(petDto.getName());
         pet.setAnimalType(petDto.getAnimalType());
         pet.setBreed(petDto.getBreed());
@@ -171,38 +201,96 @@ public class OwnerServiceImpl implements OwnerService {
         }
     }
 
+    private void petsCreateOrUpdate(OwnerRequestDto ownerRequestDto, Owner oldOwner) {
 
+        List<PetDto> requestDtoPets = ownerRequestDto.getPets();
+        List<Pet> oldOwnerPets = oldOwner.getPets();
 
-    private void petsCreateOrUpdate(OwnerDto ownerDto,
-                                    Owner oldOwner,
-                                    List<Pet> petsListOwnerEntity ) {
-        if (!ownerDto.getPets().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(requestDtoPets)) {
 
-            ownerDto.getPets().forEach(petDto -> {
+            ownerRequestDto.getPets().forEach(petDto -> {
 
-                if (petDto.getId() == null){
+                if (petDto.getId() == null) {
                     Pet newPet = getNewPet(petDto);
 
                     newPet.setOwner(oldOwner);
                     oldOwner.getPets().add(newPet);
-                } else {
-                    Integer idPetDto = petDto.getId();
-                    Optional<Pet> optionalPet = petsListOwnerEntity.stream()
-                            .filter(pet -> Objects.equals(pet.getId(), idPetDto))
-                            .findFirst();
-                    //.ifPresent(pet -> getUpdarePetDtoFromPet(pet, petDto));
+
+                } else if (petDto.getId() != null) {
+
+                    Optional<Pet> optionalPet = oldOwnerPets.stream()
+                            .filter(petsOwner -> petsOwner.getId().equals(petDto.getId())).findFirst();
+
                     if (optionalPet.isPresent()) {
-                        getUpdarePetDtoFromPet(optionalPet.get(), petDto);
-                    } else {
-                        throw new EntityNotFoundException("Pets with this Id not found");
+                        getUpdatePetDtoFromPet(optionalPet.get(), petDto);
                     }
+                } else {
+                    throw new EntityNotFoundException("Pets with this Id not found");
                 }
             });
         }
+    }
+
+    private void billingDetailsCreateOrUpdate(OwnerRequestDto ownerRequestDto, Owner oldOwner) {
+
+        // получаем Сет BD нашего owner
+        Set<BillingDetails> oldOwnerBillingDetails = oldOwner.getBillingDetails();
+        List<BillingDetailsCreateDto> billingDetailsFromDto = ownerRequestDto.getBillingDetails();
+
+        // не пустой ли
+        if (CollectionUtils.isNotEmpty(billingDetailsFromDto)) {
+
+            // проходим по списку из DTO и смотрим есть ли эл с id null
+            billingDetailsFromDto.forEach(billingDetailsCreateDto -> {
+                if (billingDetailsCreateDto.getId() == null){
+                    //создаем новый BD
+                    BillingDetails billingDetailsForOwner = createBillingDetailsForOwner(billingDetailsCreateDto);
+
+                    // Добавляем Owner в поле нового BD
+                    billingDetailsForOwner.setOwner(oldOwner);
+
+                    // Добавляем в Сет oldOwner
+                    oldOwner.getBillingDetails().add(billingDetailsForOwner);
+
+                    // если id не равно null ищем в списке owner
+                } else if (billingDetailsCreateDto.getId() != null) {
+
+                    Optional<BillingDetails> foundDetails = oldOwnerBillingDetails.stream()
+                            .filter(bd -> bd.getId().equals(billingDetailsCreateDto.getId()))
+                            .findFirst();
+
+                    if (foundDetails.isPresent()) {
+                        if (billingDetailsCreateDto.getBillingType() == BillingType.BANK_ACCOUNT) {
+
+                            BankAccount foundDetailsBA = (BankAccount) foundDetails.get();
+
+                            foundDetailsBA.setBillingType(BillingType.BANK_ACCOUNT);
+
+                            foundDetailsBA.setAccountNumber(billingDetailsCreateDto.param1);
+                            foundDetailsBA.setBankName(billingDetailsCreateDto.param2);
+                            foundDetailsBA.setSwiftCode(billingDetailsCreateDto.param3);
+
+                        } else if (billingDetailsCreateDto.getBillingType() == BillingType.CREDIT_CARD) {
+
+                            CreditCard foundDetailsCC = (CreditCard) foundDetails.get();
+
+                            foundDetailsCC.setBillingType(BillingType.CREDIT_CARD);
+
+                            foundDetailsCC.setCardNumber(billingDetailsCreateDto.param1);
+                            foundDetailsCC.setExpiryYear(billingDetailsCreateDto.param2);
+                            foundDetailsCC.setExpiryMonth(billingDetailsCreateDto.param3);
+
+                        } else {
+                            throw new EntityNotFoundException("Billing Details not found. Проверьте id");
+                        }
+                    }
+                }
+            });
+        };
 
     }
 
-    private void addressCreateOrUpdate(OwnerDto ownerDto, Owner oldOwner){
+    private void addressCreateOrUpdate(OwnerRequestDto ownerDto, Owner oldOwner){
         Address address = null;
         if (ownerDto.getAddress() != null){
 
@@ -256,4 +344,32 @@ public class OwnerServiceImpl implements OwnerService {
             oldOwner.setAddress(address);
         }
     }
+
+
+    public BillingDetails createBillingDetailsForOwner(BillingDetailsCreateDto billingDetailsCreateDto) {
+        // получаем billingType
+        BillingType billingType = billingDetailsCreateDto.getBillingType();
+
+        return switch (billingType){
+            case CREDIT_CARD ->
+                    CreditCard.builder()
+                            .billingType(billingType)
+                            .cardNumber(billingDetailsCreateDto.getParam1())
+                            .expiryYear(billingDetailsCreateDto.getParam2())
+                            .expiryMonth(billingDetailsCreateDto.getParam3())
+                            //.owner(ownerById)
+                            .build();
+
+            case BANK_ACCOUNT -> BankAccount.builder()
+                    .billingType(billingType)
+                    .accountNumber(billingDetailsCreateDto.param1)
+                    .bankName(billingDetailsCreateDto.param2)
+                    .swiftCode(billingDetailsCreateDto.param3)
+                    //.owner(ownerById)
+                    .build();
+
+            default -> throw new IllegalArgumentException("Unknown billing type: " + billingType);
+        };
+    }
+
 }

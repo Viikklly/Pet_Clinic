@@ -1,6 +1,5 @@
 package com.example.petprojectcrud.service.clients;
 
-import com.example.petprojectcrud.DTO.clients.OwnerDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.enums.AnimalType;
 import com.example.petprojectcrud.model.clients.Owner;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

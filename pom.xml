@@ -64,9 +64,6 @@
             <version>2.8.5</version>
         </dependency>
 
-        <!-- Maven -->
-
-
         <!-- Hibernate ORM -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -127,6 +124,13 @@
             <version>3.1.2</version>
         </dependency>
 
+
+        <!-- apache.commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.5.0-M2</version>
+        </dependency>
 
     </dependencies>
 
