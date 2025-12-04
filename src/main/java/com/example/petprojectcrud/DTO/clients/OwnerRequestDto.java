@@ -1,6 +1,7 @@
+/*
 package com.example.petprojectcrud.DTO.clients;
 
-import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsCreateDto;
+///import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsCreateDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class OwnerRequestDto extends OwnerDto {
-    private List<BillingDetailsCreateDto> billingDetails;
+    ///private List<BillingDetailsCreateDto> billingDetails;
 }
+*/

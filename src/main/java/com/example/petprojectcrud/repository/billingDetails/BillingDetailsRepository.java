@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.repository.billingDetails;
 
 import com.example.petprojectcrud.model.billingDetails.BillingDetails;
@@ -14,3 +15,4 @@ public interface BillingDetailsRepository extends JpaRepository<BillingDetails, 
 
     public Optional<BillingDetailsRepository> findById(Long id);
 }
+*/

@@ -1,0 +1,41 @@
+# Собрать JAR файл
+mvn clean package
+
+
+# Запуск всех сервисов
+docker-compose up -d
+
+# Просмотр логов
+docker-compose logs -f
+
+# Остановка
+docker-compose down
+
+# Остановка с удалением volumes
+docker-compose down -v
+
+
+# Проверка работающих контейнеров
+docker ps
+
+# Проверка логов приложения
+docker logs spring_app
+
+# Проверка подключения к БД
+docker exec -it postgres_db psql -U postgres -d learning_base_pets_owners
+
+# Пересборка и запуск
+docker-compose up -d --build
+
+# Только база данных
+docker-compose up -d postgres
+
+# Просмотр логов конкретного сервиса
+docker-compose logs app
+docker-compose logs postgres
+
+# Остановка и удаление
+docker-compose down
+
+# Очистка Docker (осторожно!)
+docker system prune -a

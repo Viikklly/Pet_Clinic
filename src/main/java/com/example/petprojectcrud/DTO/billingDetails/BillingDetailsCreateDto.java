@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.DTO.billingDetails;
 
 
@@ -21,3 +22,4 @@ public class BillingDetailsCreateDto {
     public String param3;
     public Integer idOwner;
 }
+*/

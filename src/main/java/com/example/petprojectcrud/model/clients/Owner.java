@@ -1,22 +1,19 @@
 package com.example.petprojectcrud.model.clients;
 
 
-import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsFactoryDto;
-import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsResponseDto;
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
-import com.example.petprojectcrud.DTO.clients.OwnerResponseDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
 import com.example.petprojectcrud.model.address.Address;
-import com.example.petprojectcrud.model.billingDetails.BillingDetails;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import lombok.Getter;
 import lombok.Setter;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Setter
@@ -52,11 +49,19 @@ public class Owner {
     private Address address;
 
 
-    @OneToMany(mappedBy = "owner",
+/*    @OneToMany(mappedBy = "owner",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private Set<BillingDetails> billingDetails = new HashSet<>();
+    private Set<BillingDetails> billingDetails = new HashSet<>();*/
+
+    @Type(ListArrayType.class)
+    @Column(
+            name = "payment_number",
+            columnDefinition = "text[]"
+    )
+    private List<String> paymentNumber;
+
 
     @Column(name = "update_time")
     @UpdateTimestamp
@@ -83,11 +88,12 @@ public class Owner {
                 .phone(phone)
                 .address(address == null ? null : address.toDto())
                 .pets(petsDto)
+                .paymentNumber(paymentNumber)
                 .build();
     }
 
 
-    public OwnerResponseDto toResponceDto() {
+/*    public OwnerResponseDto toResponceDto() {
         List<PetDto> petsDto = new ArrayList<>();
         petsDto = pets.stream().map(pet -> pet.toDto()).toList();
 
@@ -106,5 +112,5 @@ public class Owner {
                 .pets(petsDto)
                 .billingDetails(billingDetailsDto)
                 .build();
-    }
+    }*/
 }

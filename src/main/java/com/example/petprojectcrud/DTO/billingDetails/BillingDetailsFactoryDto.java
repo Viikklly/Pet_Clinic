@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.DTO.billingDetails;
 
 import com.example.petprojectcrud.model.billingDetails.BankAccount;
@@ -8,11 +9,13 @@ import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Service;
 
 
+*/
 /*
 Помечает класс как утилитный.
 Утилитный класс — это класс, который предоставляет набор статических методов
  для выполнения общих задач, не имеет состояния и не позволяет создавать экземпляры
- */
+ *//*
+
 //@UtilityClass
 @Service
 @AllArgsConstructor
@@ -42,3 +45,4 @@ public class BillingDetailsFactoryDto {
         throw new IllegalArgumentException("Unknown BillingDetails type: " + billingDetails.getClass().getName());
     }
 }
+*/

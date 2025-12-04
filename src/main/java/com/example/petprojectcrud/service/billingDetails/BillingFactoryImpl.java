@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.service.billingDetails;
 
 
@@ -11,7 +12,11 @@ import com.example.petprojectcrud.repository.clients.OwnerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 // Помечает класс как утилитный.
 // Это класс, который предоставляет статические
@@ -20,41 +25,48 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class BillingFactoryImpl implements BillingFactory {
 
 
+
+    @Autowired
     OwnerRepository ownerRepository;
 
 
     public BillingDetails createBillingDetailsEntity(BillingDetailsCreateDto billingDetailsCreateDto) {
-
-        // получаем billingType
         BillingType billingType = billingDetailsCreateDto.getBillingType();
 
-        // получаем Owner по id
-        Owner ownerById = ownerRepository.findById(billingDetailsCreateDto.getIdOwner())
+        Owner owner = ownerRepository.findById(billingDetailsCreateDto.getIdOwner())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Owner not found with id: " + billingDetailsCreateDto.getIdOwner()
+                        "User не найден по id: " + billingDetailsCreateDto.getIdOwner()
                 ));
 
-
-        return switch (billingType){
+        return switch (billingType) {
             case CREDIT_CARD ->
-                CreditCard.builder()
-                        .cardNumber(billingDetailsCreateDto.getParam1())
-                        .expiryYear(billingDetailsCreateDto.getParam2())
-                        .expiryMonth(billingDetailsCreateDto.getParam3())
-                        //.owner(ownerById)
-                        .build();
+                    CreditCard.builder()
+                            .owner(owner)  // ДОБАВЛЕНО
+                            .billingType(billingType)  // ДОБАВЛЕНО
+                            .cardNumber(billingDetailsCreateDto.getParam1())
+                            .expiryYear(billingDetailsCreateDto.getParam2())
+                            .expiryMonth(billingDetailsCreateDto.getParam3())
+                            //.cardBalance(BigDecimal.ZERO)  // Добавьте значение по умолчанию
+                            //.isActiveCard(true)
+                            .build();
 
-            case BANK_ACCOUNT -> BankAccount.builder()
-                    .accountNumber(billingDetailsCreateDto.param1)
-                    .bankName(billingDetailsCreateDto.param2)
-                    .swiftCode(billingDetailsCreateDto.param3)
-                    //.owner(ownerById)
-                    .build();
+            case BANK_ACCOUNT ->
+                    BankAccount.builder()
+                            .owner(owner)  // ДОБАВЛЕНО
+                            .billingType(billingType)  // ДОБАВЛЕНО
+                            .accountNumber(billingDetailsCreateDto.getParam1())
+                            .bankName(billingDetailsCreateDto.getParam2())
+                            .swiftCode(billingDetailsCreateDto.getParam3())
+                            //.walletBalance(BigDecimal.ZERO)  // Добавьте значение по умолчанию
+                            //.isActiveAccount(true)
+                            .build();
 
-            default -> throw new IllegalArgumentException("Unknown billing type: " + billingType);
+            default -> throw new IllegalArgumentException("Нет такого типа банковской операции: " + billingType);
         };
     }
 }
+*/

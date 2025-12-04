@@ -124,7 +124,7 @@ public class VisitServiceImpl implements VisitService {
 
         // Формируем Map<String, BigDecimal> servicesAndPrices;
         Map<String, BigDecimal> servicesAndPrices = new HashMap<>();
-        medicalServicesFromEmployee.stream().forEach(medicalService -> {
+        medicalServicesFromEmployee.forEach(medicalService -> {
             String name = medicalService.getMedicalServiceType().getServicesTypeEnum().getName();
             BigDecimal price = medicalService.getPrice();
             servicesAndPrices.put(name, price);

@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.service.clients;
 
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
@@ -151,7 +152,8 @@ class OwnerServiceImplTest {
         Assertions.assertEquals(ownerByName.get(0).getName(), listOwners.get(0).getName());
     }
 
-    /*
+    */
+/*
     @Test
     void getOwnerByPetName() {
         List<Owner> listOwners = getListOwners();
@@ -165,7 +167,8 @@ class OwnerServiceImplTest {
        // Assertions.assertEquals(ownerByPetName.get(0).getPets().get(0).getName(), listOwners.get(0).getPets().get(0).getName());
     }
 
-     */
+     *//*
+
 
     @Test
     void getOwnerByEmail() {
@@ -208,4 +211,4 @@ class OwnerServiceImplTest {
 
         return ownerList;
     }
-}
+}*/

@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.service.billingDetails;
 
 import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsCreateDto;
@@ -11,3 +12,4 @@ public interface BillingDetailsService {
 
     List<BillingDetailsResponseDto> getAllBillingDetails();
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.DTO.clients;
 
 import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsResponseDto;
@@ -16,3 +17,4 @@ import java.util.List;
 public class OwnerResponseDto extends OwnerDto {
     private List<BillingDetailsResponseDto> billingDetails;
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.model.billingDetails;
 
 
@@ -33,3 +34,4 @@ public class BankAccount extends BillingDetails {
     @Column(name = "swift_code")
     protected String swiftCode;
 }
+*/

@@ -1,18 +1,11 @@
 package com.example.petprojectcrud.service.clients;
 
-import com.example.petprojectcrud.DTO.billingDetails.BillingDetailsCreateDto;
 import com.example.petprojectcrud.DTO.clients.OwnerDto;
-import com.example.petprojectcrud.DTO.clients.OwnerRequestDto;
-import com.example.petprojectcrud.DTO.clients.OwnerResponseDto;
 import com.example.petprojectcrud.DTO.clients.PetDto;
-import com.example.petprojectcrud.enums.BillingType;
 import com.example.petprojectcrud.model.address.Address;
 import com.example.petprojectcrud.model.address.City;
 import com.example.petprojectcrud.model.address.Country;
 import com.example.petprojectcrud.model.address.Street;
-import com.example.petprojectcrud.model.billingDetails.BankAccount;
-import com.example.petprojectcrud.model.billingDetails.BillingDetails;
-import com.example.petprojectcrud.model.billingDetails.CreditCard;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.repository.clients.OwnerRepository;
@@ -23,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @AllArgsConstructor
@@ -34,29 +28,29 @@ public class OwnerServiceImpl implements OwnerService{
 
     /// +BD
     @Override
-    public List<OwnerResponseDto> getAllOwners() {
+    public List<OwnerDto> getAllOwners() {
         return ownerRepository.findAll().stream()
                 .sorted(Comparator.comparing(Owner::getId))
-                .map(owner -> owner.toResponceDto())
+                .map(owner -> owner.toDto())
                 .toList();
     }
 
     /// +BD
     @Override
-    public OwnerResponseDto getOwnerById(Integer id) {
+    public OwnerDto getOwnerById(Integer id) {
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
         if (ownerOptional.isPresent()) {
-            return ownerOptional.get().toResponceDto();
+            return ownerOptional.get().toDto();
         } else {
             // бросить свое исключение notFound
             // сейчас возвращается пустой объект
-            return OwnerResponseDto.builder().build();
+            return OwnerDto.builder().build();
         }
     }
 
     /// +BD
     @Override
-    public OwnerResponseDto updateOwner(Integer id, OwnerRequestDto ownerDto) {
+    public OwnerDto updateOwner(Integer id, OwnerDto ownerDto) {
         //получили старого owner по id
         Optional<Owner> ownerOptional = ownerRepository.findById(id);
 
@@ -65,17 +59,20 @@ public class OwnerServiceImpl implements OwnerService{
             Owner oldOwner = ownerOptional.get();
 
             List<Pet> petsListOwnerEntity = oldOwner.getPets();
-            Set<BillingDetails> oldOwnerBillingDetails = oldOwner.getBillingDetails();
+            //Set<BillingDetails> oldOwnerBillingDetails = oldOwner.getBillingDetails();
+            List<String> oldOwnerPaymentNumber = oldOwner.getPaymentNumber();
 
             setOwnerNameEmailPhone(ownerDto, oldOwner);
             petsCreateOrUpdate(ownerDto, oldOwner);
             addressCreateOrUpdate(ownerDto, oldOwner);
+            paymentNumberCreateOrUpdate(ownerDto, oldOwner);
 
-            billingDetailsCreateOrUpdate(ownerDto, oldOwner);
+
+            ///billingDetailsCreateOrUpdate(ownerDto, oldOwner);
 
             Owner updatedOwner = ownerRepository.save(oldOwner);
 
-            return updatedOwner.toResponceDto();
+            return updatedOwner.toDto();
 
         } else {
             // бросить свое исключение notFound
@@ -85,11 +82,11 @@ public class OwnerServiceImpl implements OwnerService{
 
     /// +BD
     @Override
-    public OwnerResponseDto createOwner(OwnerRequestDto ownerRequestDto) {
+    public OwnerDto createOwner(OwnerDto ownerDto) {
         //создаем нового Owner
         Owner newOwner = new Owner();
 
-        setOwnerNameEmailPhone(ownerRequestDto, newOwner);
+        setOwnerNameEmailPhone(ownerDto, newOwner);
 
         ownerRepository.save(newOwner);
 
@@ -97,8 +94,8 @@ public class OwnerServiceImpl implements OwnerService{
 
 
 
-        if (!ownerRequestDto.getPets().isEmpty()) {
-            for (PetDto pet : ownerRequestDto.getPets()) {
+        if (!ownerDto.getPets().isEmpty()) {
+            for (PetDto pet : ownerDto.getPets()) {
 
                 Pet newPet = getNewPet(pet);
 
@@ -109,7 +106,7 @@ public class OwnerServiceImpl implements OwnerService{
         }
 
 
-        if (!ownerRequestDto.getBillingDetails().isEmpty()) {
+/*        if (!ownerRequestDto.getBillingDetails().isEmpty()) {
 
             List<BillingDetailsCreateDto> billingDetails = ownerRequestDto.getBillingDetails();
             for (BillingDetailsCreateDto billingDetail : billingDetails) {
@@ -120,15 +117,17 @@ public class OwnerServiceImpl implements OwnerService{
 
                 newOwner.getBillingDetails().add(billingDetailsEntity);
             }
-        }
+        }*/
 
 
-        addressCreateOrUpdate(ownerRequestDto, newOwner);
+        addressCreateOrUpdate(ownerDto, newOwner);
 
-        /*Owner save = */ownerRepository.save(newOwner);
+        paymentNumberCreateOrUpdate(ownerDto, newOwner);
+
+        ownerRepository.save(newOwner);
 
 
-        return newOwner.toResponceDto();
+        return newOwner.toDto();
     }
 
     @Override
@@ -139,26 +138,26 @@ public class OwnerServiceImpl implements OwnerService{
 
     /// +BD
     @Override
-    public List<OwnerResponseDto> getOwnerByName(String name) {
+    public List<OwnerDto> getOwnerByName(String name) {
         List<Owner> byNameLikeOwner = ownerRepository.findByNameContainsIgnoreCase(name);
         //List<OwnerDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toDto()).toList();
-        List<OwnerResponseDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toResponceDto()).toList();
+        List<OwnerDto> listNameLikeOwnerDto = byNameLikeOwner.stream().map(owner -> owner.toDto()).toList();
         return listNameLikeOwnerDto;
     }
 
     // +BD
     @Override
-    public List<OwnerResponseDto> getOwnerByPetName(String petName) {
+    public List<OwnerDto> getOwnerByPetName(String petName) {
         List<Owner> ownerByPetsName = ownerRepository.findOwnerByPetsName(petName);
-        return ownerByPetsName.stream().map(owner -> owner.toResponceDto()).toList();
+        return ownerByPetsName.stream().map(owner -> owner.toDto()).toList();
     }
 
     @Override
-    public OwnerResponseDto getOwnerByEmail(String email) {
+    public OwnerDto getOwnerByEmail(String email) {
         List<Owner> byEmail = ownerRepository.findByEmail(email);
         Optional<Owner> optionalOwner = byEmail.stream().findFirst();
         if (optionalOwner.isPresent()) {
-            return optionalOwner.get().toResponceDto();
+            return optionalOwner.get().toDto();
         } else {
             // Подумать что тут выдавать, если по эмайл не найден
             throw new EntityNotFoundException("Owner not found");
@@ -201,7 +200,7 @@ public class OwnerServiceImpl implements OwnerService{
         }
     }
 
-    private void petsCreateOrUpdate(OwnerRequestDto ownerRequestDto, Owner oldOwner) {
+    private void petsCreateOrUpdate(OwnerDto ownerRequestDto, Owner oldOwner) {
 
         List<PetDto> requestDtoPets = ownerRequestDto.getPets();
         List<Pet> oldOwnerPets = oldOwner.getPets();
@@ -231,7 +230,46 @@ public class OwnerServiceImpl implements OwnerService{
         }
     }
 
-    private void billingDetailsCreateOrUpdate(OwnerRequestDto ownerRequestDto, Owner oldOwner) {
+
+    private void paymentNumberCreateOrUpdate(OwnerDto ownerDto, Owner oldOwner) {
+
+        /// Получаем списки с дефолтными значениями
+        List<String> oldPaymentNumbers = getSafeList(oldOwner.getPaymentNumber());
+
+        /// Если oldOwner == null, создает пустой список (нужно при создании owner)
+        if (!CollectionUtils.isNotEmpty(oldPaymentNumbers)) {
+            oldPaymentNumbers = new ArrayList<>();
+        }
+
+        List<String> newPaymentNumbers = getSafeList(ownerDto.getPaymentNumber());
+
+        /// Очищаем новые номера от null и пустых значений
+        List<String> cleanedNewNumbers = newPaymentNumbers.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(num -> !num.isEmpty())
+                .distinct() /// Убираем дубликаты в новом списке
+                .collect(Collectors.toList());
+
+        // Если после очистки новый список пуст, ничего не делаем
+        if (cleanedNewNumbers.isEmpty()) {
+            return;
+        }
+
+        // Объединяем списки, убирая дубликаты
+        Set<String> uniqueNumbers = new LinkedHashSet<>(oldPaymentNumbers);
+        uniqueNumbers.addAll(cleanedNewNumbers);
+
+        oldOwner.setPaymentNumber(new ArrayList<>(uniqueNumbers));
+    }
+
+    /// Вспомогательный метод для безопасного получения списка
+    private List<String> getSafeList(List<String> list) {
+        return list != null ? list : new ArrayList<>();
+    }
+
+    /*
+    private void billingDetailsCreateOrUpdate(OwnerDto ownerRequestDto, Owner oldOwner) {
 
         // получаем Сет BD нашего owner
         Set<BillingDetails> oldOwnerBillingDetails = oldOwner.getBillingDetails();
@@ -288,9 +326,9 @@ public class OwnerServiceImpl implements OwnerService{
             });
         };
 
-    }
+    }*/
 
-    private void addressCreateOrUpdate(OwnerRequestDto ownerDto, Owner oldOwner){
+    private void addressCreateOrUpdate(OwnerDto ownerDto, Owner oldOwner){
         Address address = null;
         if (ownerDto.getAddress() != null){
 
@@ -345,6 +383,7 @@ public class OwnerServiceImpl implements OwnerService{
         }
     }
 
+/*
 
     public BillingDetails createBillingDetailsForOwner(BillingDetailsCreateDto billingDetailsCreateDto) {
         // получаем billingType
@@ -371,5 +410,6 @@ public class OwnerServiceImpl implements OwnerService{
             default -> throw new IllegalArgumentException("Unknown billing type: " + billingType);
         };
     }
+*/
 
 }

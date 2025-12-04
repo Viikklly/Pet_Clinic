@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.DTO.billingDetails;
 
 import com.example.petprojectcrud.enums.BillingType;
@@ -16,3 +17,4 @@ public class BillingDetailsResponseDto {
     /// ???
     private String number;
 }
+*/

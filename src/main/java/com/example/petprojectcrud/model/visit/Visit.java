@@ -7,6 +7,7 @@ import com.example.petprojectcrud.DTO.visit.VisitDtoRequest;
 import com.example.petprojectcrud.model.clients.Owner;
 import com.example.petprojectcrud.model.clients.Pet;
 import com.example.petprojectcrud.model.employee.Employee;
+import com.example.petprojectcrud.model.employee.MedicalServices;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,6 +18,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "visit")
@@ -29,7 +31,7 @@ public class Visit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "description")
     private String description;
@@ -53,10 +55,10 @@ public class Visit {
 
     @Type(ListArrayType.class)
     @Column(
-            name = "services[]",
+            name = "services",
             columnDefinition = "integer[]"
     )
-    private List<Integer> idsServices;
+    private List<Integer> idsServices; // TODO serviceIds
 
     @Column(name = "total_price",
             precision = 10,
@@ -71,6 +73,8 @@ public class Visit {
     @CreationTimestamp
     private Date createTime;
 
+    /// TODO дописать статус визита оплачен/не оплачен. статус берется из bankPayment
+
 
     public VisitDtoResponse toDto() {
 
@@ -78,10 +82,10 @@ public class Visit {
                 .builder()
                 .id(id)
                 .description(description)
-                .pet(pet.toDto())
-                .owner(owner.toDto())
-                .employee(employee.toDto())
-                //.services(services.stream().map(MedicalServices::toDto).collect(Collectors.toSet()))
+                .pet(pet != null ? pet.toDto() : null)
+                .owner(owner != null ? owner.toDto() : null)
+                .employee(employee != null ? employee.toDto() : null)
+                ///.services(services.stream().map(MedicalServices::toDto).collect(Collectors.toSet()))
                 .totalPrice(totalPrice)
                 .createTime(createTime)
                 .build();

@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.model.billingDetails;
 
 
@@ -37,3 +38,4 @@ public abstract class BillingDetails {
     @Column(name = "billing_type")
     private BillingType billingType;
 }
+*/

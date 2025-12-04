@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.DTO.billingDetails;
 
 import com.example.petprojectcrud.enums.BillingType;
@@ -19,3 +20,4 @@ public class CreditCardResponseDto extends BillingDetailsResponseDto {
         setType(BillingType.CREDIT_CARD);
     }
 }
+*/

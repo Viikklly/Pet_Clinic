@@ -1,3 +1,4 @@
+/*
 package com.example.petprojectcrud.repository.billingDetails;
 
 import com.example.petprojectcrud.model.billingDetails.CreditCard;
@@ -8,3 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CreditCardRepository extends JpaRepository<CreditCard, Integer> {
 }
+*/

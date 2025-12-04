@@ -1,9 +1,7 @@
 package com.example.petprojectcrud.controller.visit;
 
 import com.example.petprojectcrud.DTO.visit.VisitDto;
-import com.example.petprojectcrud.DTO.visit.VisitDtoResponse;
 import com.example.petprojectcrud.DTO.visit.VisitDtoRequest;
-import com.example.petprojectcrud.repository.billingDetails.BillingDetailsRepository;
 import com.example.petprojectcrud.service.visit.VisitService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
