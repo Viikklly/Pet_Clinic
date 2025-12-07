@@ -61,7 +61,7 @@ public class BankPaymentServiceImpl implements BankPaymentService {
                 .description("Оплата услуг ООО Клиника ЛАПКИ ЦАРАПКИ")
                 .build();
 
-        TransactionalResponseDto transactionalResponseDto = bankClient.sendPaymentBankProj(sendPaymentToBankDto);
+        ///TransactionalResponseDto transactionalResponseDto = bankClient.sendPaymentBankProj(sendPaymentToBankDto);
 
         /// ТУТ можно вытащить статус операции, что бы добавить в VISIT
 
