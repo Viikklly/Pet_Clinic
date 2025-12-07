@@ -17,44 +17,17 @@ import java.math.BigDecimal;
 public class SendPaymentToBankDto {
 
     @Schema(
-            description = "Имя обладателя счета от куда",
-            example = "Воронцов Артем Александрович"
-    )
-    private String fromAccountNameUser;
-
-    @Schema(
-            description = "Телефон обладателя счета от куда",
-            example = "+79033334455"
-    )
-    private String fromAccountPhoneUser;
-
-    @Schema(
             description = "Платежные реквизиты счета от куда",
-            example = "5111-2222-3333-4444"
+            example = "CC_5111-2222-3333-4444"
     )
     private String fromAccountPaymentNumberUser;
 
 
-    /// TODO перенести данные в конфиг
-    @Schema(
-            description = "Имя обладателя счета куда. Клиника",
-            example = "ООО Клиника ЛАПКИ ЦАРАПКИ"
-    )
-    private String toAccountNameUser = "ООО Клиника ЛАПКИ ЦАРАПКИ";
-
-    /// TODO перенести данные в конфиг
-    @Schema(
-            description = "Телефон клиники. куда",
-            example = "+79161234567"
-    )
-    private String toAccountPhoneUser = "+79161234567";
-
-    /// TODO перенести данные в конфиг
     @Schema(
             description = "Платежные реквизиты счета клиники",
-            example = "40817810100001234567"
+            example = "BA_40817810100001234567"
     )
-    private String toAccountPaymentNumberUser = "40817810100001234567";
+    private String toAccountPaymentNumberUser;
 
 
     @Schema(

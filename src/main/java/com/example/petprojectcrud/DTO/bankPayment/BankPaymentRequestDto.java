@@ -16,7 +16,7 @@ public class BankPaymentRequestDto {
     @Schema(description = "id визита", example = "1")
     private Integer visitId;
 
-    @Schema(description = "N платежных реквизитов", example = "5111-2222-3333-4444")
+    @Schema(description = "N платежных реквизитов, начинается или с CC_ или BA_", example = "CC_5111-2222-3333-4444")
     private String paymentNumberUser;
 
 }

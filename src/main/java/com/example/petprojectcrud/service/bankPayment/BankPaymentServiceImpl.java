@@ -55,9 +55,8 @@ public class BankPaymentServiceImpl implements BankPaymentService {
         /// Данные счета, с которого будет совершаться списание денег надо прописать ЯВНО в запросе
         /// данные аккаунта клиники заполняются в SendPaymentToBankDto
         SendPaymentToBankDto sendPaymentToBankDto = SendPaymentToBankDto.builder()
-                .fromAccountNameUser(ownerName)
-                .fromAccountPhoneUser(ownerPhone)
                 .fromAccountPaymentNumberUser(bankPaymentRequestDto.getPaymentNumberUser())
+                .toAccountPaymentNumberUser("BA_40817810100001234567")
                 .amount(totalPrice)
                 .description("Оплата услуг ООО Клиника ЛАПКИ ЦАРАПКИ")
                 .build();

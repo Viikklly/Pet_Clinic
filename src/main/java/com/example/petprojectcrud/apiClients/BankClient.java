@@ -92,7 +92,7 @@ public interface BankClient {
 
 
 
-    @PostMapping("/transaction/deposit")
+    @PostMapping("/transaction/deposit-clinic")
     TransactionalResponseDto sendPaymentBankProj(@RequestBody SendPaymentToBankDto sendPaymentToBankDto);
 
 
